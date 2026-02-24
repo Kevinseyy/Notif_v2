@@ -1,0 +1,22 @@
+export const $ = (id) => document.getElementById(id);
+
+export const homeView = $("homeView");
+export const createGroupBtn = $("createGroupBtn");
+export const groupsList = $("groupsList");
+
+export const groupView = $("groupView");
+export const groupTitle = $("groupTitle");
+export const groupInfo = $("groupInfo");
+export const memberList = $("memberList");
+export const freeNowBtn = $("freeNowBtn");
+
+export const createGroupModal = $("createGroupModal");
+export const closeCreateGroupModalBtn = $("closeCreateGroupModalBtn");
+export const cancelCreateGroupBtn = $("cancelCreateGroupBtn");
+export const submitCreateGroupBtn = $("submitCreateGroupBtn");
+export const groupNameInput = $("groupNameInput");
+export const createGroupError = $("createGroupError");
+
+export const inviteBtn = $("inviteBtn");
+export const inviteModal = $("inviteModal");
+export const closeInviteModalBtn = $("closeInviteModalBtn");
