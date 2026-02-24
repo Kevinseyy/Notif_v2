@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Notif</title>
+    <link href="style.css" rel="stylesheet" />
+  </head>
+  <body>
+    <div class="page">
+        <header class="topbar">
+            <button class="icon-btn" id="gearBtn" arial-label="Open settings menu">
+                ☰
+            </button>
+
+            <div class="brand">NOTIF</div>
+
+            <div class="auth-action">
+                <button class="ghost-btn" id="loginBtn">LOGIN</button>
+                <button class="ghost-btn" id="registerBtn">REGISTER</button>
+            </div>
+         </header>
+
+         <main class="content" id="homeView">
+
+            <section class="panel left">
+                <h1>Start plans faster.</h1>
+                <p>
+                  NOTIF lets you share your availability with a selected group of friends.
+                  When someone switches to <strong>Free now</strong>, everyone gets one simple notification.
+                </p>
+
+                <p class="muted">
+                    No long message threads. Just quick signals.
+                  </p>
+          
+                  <div class="cta-row">
+                    <button class="primary-btn" id="createGroupBtn">Create Group</button>
+                    <button class="secondary-btn" id="learnMoreBtn">Learn more</button>
+                  </div>
+
+                  <div id="groupsList" class="groups-list"></div>
+
+                </section>
+          
+                <section class="panel right">
+                  <div class="image-card">
+                    <div class="image-placeholder">
+                      Picture of something
+                    </div>
+                  </div>
+                </section>
+         </main>
+
+         <main class="content" id="groupView" style="display: none;">
+          <button class="primary-btn free-now-btn" id="freeNowBtn">
+            Free now
+          </button>
+
+          <section class="panel left group-panel">
+            
+            <div class="group-header">
+              <h1 id="groupTitle">Group name</h1>
+            </div>
+        
+         
+            <div class="member-list" id="memberList">
+              <div class="member">
+                <span class="member-name">Kevin</span>
+                <span class="status-dot red"></span>
+              </div>
+            </div>
+        
+            <div class="group-footer muted" id="groupInfo">
+              Group info
+            </div>
+          </section>
+        
+          <section class="panel right group-actions">
+            <div class="group-actions-top">
+              <button class="secondary-btn" id="inviteBtn">Invite</button>
+              <button class="secondary-btn" id="statusBtn">Status</button>
+            </div>
+        
+            
+          </section>
+        </main>
+        
+          
+
+         <dialog class="modal" id="createGroupModal">
+            <div class="modal-card">
+              <div class="modal-header">
+                <h2>Create group</h2>
+                <button class="icon-btn" id="closeCreateGroupModalBtn" aria-label="Close">
+                  ✕
+                </button>
+              </div>
+          
+              <div class="field">
+                <span>Group name</span>
+                <input
+                  id="groupNameInput"
+                  type="text"
+                  placeholder="e.g. Game night"
+                  maxlength="30"
+                />
+              </div>
+              
+              <p class="form-error" id="createGroupError"></p>
+          
+              <div class="cta-row">
+                <button class="secondary-btn" id="cancelCreateGroupBtn">Cancel</button>
+                <button class="primary-btn" id="submitCreateGroupBtn">Create</button>
+              </div>
+            </div>
+          </dialog>
+
+          <dialog class="modal" id="inviteModal">
+            <div class="modal-card">
+              <div class="modal-header">
+                <h2>Invite</h2>
+                <button class="icon-btn" id="closeInviteModalBtn" aria-label="Close">
+                  ✕
+                </button>
+              </div>
+          
+              <div class="field">
+                <span>Search users</span>
+                <input
+                  id="inviteSearchInput"
+                  type="text"
+                  placeholder="Search by name or username"
+                />
+              </div>
+          
+              <div class="invite-results" id="inviteResults">
+                <!-- Placeholder results for now -->
+                <div class="invite-user">
+                  <span>Modi</span>
+                  <button class="secondary-btn small">Invite</button>
+                </div>
+          
+                <div class="invite-user">
+                  <span>Faz</span>
+                  <button class="secondary-btn small">Invite</button>
+                </div>
+              </div>
+            </div>
+          </dialog>
+          
+          
+
+          
+
+    <script src="./app.mjs" type="module"></script>
+  </body>
+</html>
