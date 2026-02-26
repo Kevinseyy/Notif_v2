@@ -1,0 +1,15 @@
+info:
+  name: Update Status
+  type: http
+  seq: 2
+
+http:
+  method: PUT
+  url: "{{base_url}}/status"
+  auth: inherit
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5
