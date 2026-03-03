@@ -8,7 +8,7 @@ const PORT = 8080;
 app.use(express.json());
 
 app.use(express.static("public"));
-app.use("/src", express.static("src"));
+app.use(express.static("src"));
 
 app.use("/api/v1", contentRouter);
 app.use("/api/v1", usersRouter);
