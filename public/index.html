@@ -148,6 +148,67 @@
               </div>
             </div>
           </dialog>
+
+          <dialog class="modal" id="loginModal">
+            <div class="modal-card">
+              <div class="modal-header">
+                <h2>Login</h2>
+                <button class="icon-btn" id="closeLoginModalBtn" aria-label="Close">✕</button>
+              </div>
+          
+              <div class="field">
+                <span>Username</span>
+                <input id="loginUsername" type="text" placeholder="Your username" />
+              </div>
+          
+              <div class="field">
+                <span>Password</span>
+                <input id="loginPassword" type="password" placeholder="••••••••" />
+              </div>
+          
+              <p class="form-error" id="loginError"></p>
+          
+              <div class="cta-row">
+                <button class="primary-btn full-width" id="submitLoginBtn">Login</button>
+              </div>
+            </div>
+          </dialog>
+          
+          <dialog class="modal" id="registerModal">
+            <div class="modal-card">
+              <div class="modal-header">
+                <h2>Create Account</h2>
+                <button class="icon-btn" id="closeRegisterModalBtn" aria-label="Close">✕</button>
+              </div>
+          
+              <div class="field">
+                <span>Choose Username</span>
+                <input id="registerUsername" type="text" placeholder="Username (min 3 chars)" />
+              </div>
+          
+              <div class="field">
+                <span>Password</span>
+                <input id="registerPassword" type="password" placeholder="••••••••" />
+              </div>
+          
+              <div class="consent-box">
+                <label class="checkbox-container">
+                  <input type="checkbox" id="tosConsent">
+                  <span class="checkmark"></span>
+                  <span class="consent-text">
+                    I agree to the <a href="#" id="viewTos">Terms of Service</a> and 
+                    <a href="#" id="viewPrivacy">Privacy Policy</a>.
+                  </span>
+                </label>
+              </div>
+          
+              <p class="form-error" id="registerError"></p>
+          
+              <div class="cta-row">
+                <button class="primary-btn full-width" id="submitRegisterBtn">Register</button>
+              </div>
+            </div>
+          </dialog>
           
           
 
