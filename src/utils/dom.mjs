@@ -33,3 +33,12 @@ export const closeRegisterModalBtn = $("closeRegisterModalBtn");
 export const submitLoginBtn = $("submitLoginBtn");
 export const submitRegisterBtn = $("submitRegisterBtn");
 export const tosConsent = $("tosConsent");
+
+export const viewTosLink = $("viewTos");
+export const viewPrivacyLink = $("viewPrivacy");
+
+export const tosModal = $("tosModal");
+export const privacyModal = $("privacyModal");
+
+export const closeTosModalBtn = $("closeTosModalBtn");
+export const closePrivacyModalBtn = $("closePrivacyModalBtn");

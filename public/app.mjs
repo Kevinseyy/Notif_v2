@@ -21,6 +21,12 @@ import {
   closeRegisterModalBtn,
   submitRegisterBtn,
   tosConsent,
+  viewTosLink,
+  viewPrivacyLink,
+  tosModal,
+  privacyModal,
+  closeTosModalBtn,
+  closePrivacyModalBtn,
 } from "/utils/dom.mjs";
 
 // Events
@@ -66,6 +72,25 @@ submitRegisterBtn.addEventListener("click", () => {
 });
 
 [loginModal, registerModal].forEach((modal) => {
+  modal.addEventListener("click", (e) => {
+    if (e.target === modal) modal.close();
+  });
+});
+
+viewTosLink.addEventListener("click", (e) => {
+  e.preventDefault();
+  tosModal.showModal();
+});
+
+viewPrivacyLink.addEventListener("click", (e) => {
+  e.preventDefault();
+  privacyModal.showModal();
+});
+
+closeTosModalBtn.addEventListener("click", () => tosModal.close());
+closePrivacyModalBtn.addEventListener("click", () => privacyModal.close());
+
+[tosModal, privacyModal].forEach((modal) => {
   modal.addEventListener("click", (e) => {
     if (e.target === modal) modal.close();
   });

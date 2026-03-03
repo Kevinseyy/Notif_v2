@@ -507,3 +507,20 @@ body {
 .modal-card .field input {
   width: 100%;
 }
+
+.legal-content {
+  max-height: 300px;
+  overflow-y: auto;
+  font-size: 14px;
+  line-height: 1.5;
+  color: var(--muted);
+  padding-right: 8px;
+}
+
+.legal-content p {
+  margin-bottom: 12px;
+}
+
+.legal-content strong {
+  color: var(--text);
+}
