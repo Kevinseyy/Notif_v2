@@ -148,7 +148,96 @@
               </div>
             </div>
           </dialog>
+
+          <dialog class="modal" id="loginModal">
+            <div class="modal-card">
+              <div class="modal-header">
+                <h2>Login</h2>
+                <button class="icon-btn" id="closeLoginModalBtn" aria-label="Close">✕</button>
+              </div>
           
+              <div class="field">
+                <span>Username</span>
+                <input id="loginUsername" type="text" placeholder="Your username" />
+              </div>
+          
+              <div class="field">
+                <span>Password</span>
+                <input id="loginPassword" type="password" placeholder="••••••••" />
+              </div>
+          
+              <p class="form-error" id="loginError"></p>
+          
+              <div class="cta-row">
+                <button class="primary-btn full-width" id="submitLoginBtn">Login</button>
+              </div>
+            </div>
+          </dialog>
+          
+          <dialog class="modal" id="registerModal">
+            <div class="modal-card">
+              <div class="modal-header">
+                <h2>Create Account</h2>
+                <button class="icon-btn" id="closeRegisterModalBtn" aria-label="Close">✕</button>
+              </div>
+          
+              <div class="field">
+                <span>Choose Username</span>
+                <input id="registerUsername" type="text" placeholder="Username (min 3 chars)" />
+              </div>
+          
+              <div class="field">
+                <span>Password</span>
+                <input id="registerPassword" type="password" placeholder="••••••••" />
+              </div>
+          
+              <div class="consent-box">
+                <label class="checkbox-container">
+                  <input type="checkbox" id="tosConsent">
+                  <span class="checkmark"></span>
+                  <span class="consent-text">
+                    I agree to the <a href="#" id="viewTos">Terms of Service</a> and 
+                    <a href="#" id="viewPrivacy">Privacy Policy</a>.
+                  </span>
+                </label>
+              </div>
+          
+              <p class="form-error" id="registerError"></p>
+          
+              <div class="cta-row">
+                <button class="primary-btn full-width" id="submitRegisterBtn">Register</button>
+              </div>
+            </div>
+          </dialog>
+          
+          <dialog class="modal" id="tosModal">
+            <div class="modal-card">
+              <div class="modal-header">
+                <h2>Terms of Service</h2>
+                <button class="icon-btn" id="closeTosModalBtn">✕</button>
+              </div>
+              <div class="legal-content">
+                <p><strong>1. Ownership:</strong> You own the data you post. By using NOTIF, you grant us a license to display your status to your selected groups.</p>
+                <p><strong>2. Usage:</strong> This service is provided "as-is." Use it to coordinate with friends, not for mission-critical alerts.</p>
+                <p><strong>3. Conduct:</strong> Don't be a bot. Don't spam "Free now" notifications.</p>
+              </div>
+            </div>
+          </dialog>
+          
+          <dialog class="modal" id="privacyModal">
+            <div class="modal-card">
+              <div class="modal-header">
+                <h2>Privacy Policy</h2>
+                <button class="icon-btn" id="closePrivacyModalBtn">✕</button>
+              </div>
+              <div class="legal-content">
+                <p><strong>What we collect:</strong> Only your username and a hashed password. We follow data minimization principles.</p>
+                <p><strong>Why:</strong> To identify you to your friends and secure your account.</p>
+                <p><strong>Security:</strong> Your password is salted and hashed; we never store it in plain text.</p>
+                <p><strong>Your Rights:</strong> You can retract consent at any time by deleting your account, which wipes your personal data from our system.</p>
+              </div>
+            </div>
+          </dialog>
           
 
           

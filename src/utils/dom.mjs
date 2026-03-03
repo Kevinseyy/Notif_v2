@@ -20,3 +20,25 @@ export const createGroupError = $("createGroupError");
 export const inviteBtn = $("inviteBtn");
 export const inviteModal = $("inviteModal");
 export const closeInviteModalBtn = $("closeInviteModalBtn");
+
+export const loginBtn = $("loginBtn");
+export const registerBtn = $("registerBtn");
+
+export const loginModal = $("loginModal");
+export const registerModal = $("registerModal");
+
+export const closeLoginModalBtn = $("closeLoginModalBtn");
+export const closeRegisterModalBtn = $("closeRegisterModalBtn");
+
+export const submitLoginBtn = $("submitLoginBtn");
+export const submitRegisterBtn = $("submitRegisterBtn");
+export const tosConsent = $("tosConsent");
+
+export const viewTosLink = $("viewTos");
+export const viewPrivacyLink = $("viewPrivacy");
+
+export const tosModal = $("tosModal");
+export const privacyModal = $("privacyModal");
+
+export const closeTosModalBtn = $("closeTosModalBtn");
+export const closePrivacyModalBtn = $("closePrivacyModalBtn");

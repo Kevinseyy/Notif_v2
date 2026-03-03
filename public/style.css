@@ -473,3 +473,54 @@ body {
 .status-dot.jump {
   animation: status-jump 500ms ease-out;
 }
+
+.full-width {
+  width: 100%;
+}
+
+.consent-box {
+  margin: 15px 0;
+  padding: 12px;
+  background: rgba(255, 255, 255, 0.03);
+  border-radius: 10px;
+  border: 1px solid var(--border);
+}
+
+.checkbox-container {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  cursor: pointer;
+  font-size: 13px;
+  line-height: 1.4;
+}
+
+.consent-text a {
+  color: var(--primary);
+  text-decoration: none;
+}
+
+.consent-text a:hover {
+  text-decoration: underline;
+}
+
+.modal-card .field input {
+  width: 100%;
+}
+
+.legal-content {
+  max-height: 300px;
+  overflow-y: auto;
+  font-size: 14px;
+  line-height: 1.5;
+  color: var(--muted);
+  padding-right: 8px;
+}
+
+.legal-content p {
+  margin-bottom: 12px;
+}
+
+.legal-content strong {
+  color: var(--text);
+}
