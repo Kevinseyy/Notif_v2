@@ -63,12 +63,36 @@ registerBtn.addEventListener("click", () => registerModal.showModal());
 closeLoginModalBtn.addEventListener("click", () => loginModal.close());
 closeRegisterModalBtn.addEventListener("click", () => registerModal.close());
 
-submitRegisterBtn.addEventListener("click", () => {
+submitRegisterBtn.addEventListener("click", async () => {
   if (!tosConsent.checked) {
     alert("You must agree to the Terms of Service to create an account.");
     return;
   }
-  console.log("UI Logic: Proceeding to registration...");
+
+  const username = document.getElementById("registerUsername").value.trim();
+  const password = document.getElementById("registerPassword").value.trim();
+
+  const res = await fetch("/api/v1/", {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify({
+      username,
+      password,
+      tosAgreed: true,
+    }),
+  });
+
+  const data = await res.json();
+
+  if (!res.ok) {
+    alert(data.error || "Registration failed");
+    return;
+  }
+
+  console.log("User created:", data.userId);
+  registerModal.close();
 });
 
 [loginModal, registerModal].forEach((modal) => {
