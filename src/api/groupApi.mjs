@@ -13,14 +13,18 @@ export async function createGroup(name) {
   return res.json();
 }
 
-export async function updateStatus() {
+export async function updateStatus(status) {
   const res = await fetch("/api/v1/status", {
     method: "PUT",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ status: "FREE_NOW" }),
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify({ status }),
   });
 
-  if (!res.ok) throw new Error("Status update failed");
+  if (!res.ok) {
+    throw new Error("Status update failed");
+  }
 
   return res.json();
 }
