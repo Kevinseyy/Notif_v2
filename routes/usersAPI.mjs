@@ -16,11 +16,9 @@ usersRouter.post(
     const { username, password, tosAgreed } = req.body;
 
     if (!tosAgreed) {
-      return res
-        .status(400)
-        .json({
-          error: "You must accept the Terms of Service to create an account.",
-        });
+      return res.status(400).json({
+        error: "You must accept the Terms of Service to create an account.",
+      });
     }
 
     const newUser = {
@@ -38,6 +36,46 @@ usersRouter.post(
     });
   }
 );
+
+usersRouter.post("/login", (req, res) => {
+  const { username, password } = req.body;
+
+  console.log("Current users:", users);
+
+  const user = users.find((u) => u.username === username);
+
+  if (!user) {
+    return res.status(404).json({
+      error: "User not found",
+    });
+  }
+
+  if (user.password !== password) {
+    return res.status(401).json({
+      error: "Incorrect password",
+    });
+  }
+
+  res.json({
+    message: "Login successful",
+    userId: user.id,
+    username: user.username,
+  });
+});
+
+usersRouter.put("/status", (req, res) => {
+  const { status } = req.body;
+
+  if (!status) {
+    return res.status(400).json({
+      error: "Status is required",
+    });
+  }
+
+  res.json({
+    status,
+  });
+});
 
 usersRouter.delete("/:id", (req, res) => {
   const { id } = req.params;

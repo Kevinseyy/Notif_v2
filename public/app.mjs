@@ -1,5 +1,6 @@
 import { createGroup, updateStatus } from "/api/groupApi.mjs";
-import { currentUser, setStatus } from "/state/appState.mjs";
+import { currentUser, setStatus, setCurrentUser } from "/state/appState.mjs";
+
 import {
   openCreateGroupModal,
   closeCreateGroupModal,
@@ -8,6 +9,7 @@ import {
 
 import { addGroupTab, goToGroupView } from "/ui/views.mjs";
 import { renderMember } from "/ui/members.mjs";
+
 import {
   createGroupBtn,
   submitCreateGroupBtn,
@@ -20,6 +22,7 @@ import {
   closeLoginModalBtn,
   closeRegisterModalBtn,
   submitRegisterBtn,
+  submitLoginBtn,
   tosConsent,
   viewTosLink,
   viewPrivacyLink,
@@ -29,7 +32,6 @@ import {
   closePrivacyModalBtn,
 } from "/utils/dom.mjs";
 
-// Events
 createGroupBtn.addEventListener("click", openCreateGroupModal);
 
 submitCreateGroupBtn.addEventListener("click", async () => {
@@ -51,10 +53,13 @@ submitCreateGroupBtn.addEventListener("click", async () => {
 });
 
 freeNowBtn.addEventListener("click", async () => {
-  const data = await updateStatus();
-  const status = data.status === "FREE_NOW" ? "FREE" : "BUSY";
-  setStatus(status);
-  renderMember(currentUser.displayName, status);
+  const newStatus = currentUser.status === "FREE" ? "BUSY" : "FREE";
+
+  const data = await updateStatus(newStatus);
+
+  setStatus(data.status);
+
+  renderMember(currentUser.displayName, data.status);
 });
 
 loginBtn.addEventListener("click", () => loginModal.showModal());
@@ -63,12 +68,76 @@ registerBtn.addEventListener("click", () => registerModal.showModal());
 closeLoginModalBtn.addEventListener("click", () => loginModal.close());
 closeRegisterModalBtn.addEventListener("click", () => registerModal.close());
 
-submitRegisterBtn.addEventListener("click", () => {
+submitRegisterBtn.addEventListener("click", async () => {
+  const username = document.getElementById("registerUsername").value.trim();
+  const password = document.getElementById("registerPassword").value.trim();
+
   if (!tosConsent.checked) {
-    alert("You must agree to the Terms of Service to create an account.");
+    alert("You must agree to the Terms of Service.");
     return;
   }
-  console.log("UI Logic: Proceeding to registration...");
+
+  console.log("Sending register request...");
+
+  const res = await fetch("/api/v1/", {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify({
+      username,
+      password,
+      tosAgreed: true,
+    }),
+  });
+
+  const data = await res.json();
+
+  if (!res.ok) {
+    alert(data.error || "Registration failed");
+    return;
+  }
+
+  console.log("User created:", data.userId);
+
+  registerModal.close();
+});
+
+submitLoginBtn.addEventListener("click", async () => {
+  const username = document.getElementById("loginUsername").value.trim();
+  const password = document.getElementById("loginPassword").value.trim();
+
+  const res = await fetch("/api/v1/login", {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify({
+      username,
+      password,
+    }),
+  });
+
+  const data = await res.json();
+
+  if (!res.ok) {
+    alert(data.error || "Login failed");
+    return;
+  }
+
+  console.log("Login successful:", data.username);
+
+  setCurrentUser({
+    id: data.userId,
+    username: data.username,
+  });
+
+  loginModal.close();
+
+  document.getElementById("homeView").style.display = "none";
+  document.getElementById("groupView").style.display = "flex";
+
+  renderMember(currentUser.displayName, currentUser.status);
 });
 
 [loginModal, registerModal].forEach((modal) => {
