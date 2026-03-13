@@ -3,7 +3,15 @@ import { validateBody } from "../middleware/validateBody.mjs";
 
 export const usersRouter = express.Router();
 
-const users = [];
+const Users = {};
+
+function generateID() {
+  let id = null;
+  do {
+    id = (Math.random() * Number.MAX_SAFE_INTEGER).toString(16);
+  } while (Users[id]);
+  return id;
+}
 
 usersRouter.post(
   "/",
@@ -21,18 +29,31 @@ usersRouter.post(
       });
     }
 
+    const existingUser = Object.values(Users).find(
+      (u) => u.username === username
+    );
+
+    if (existingUser) {
+      return res.status(409).json({
+        error: "Username already taken",
+      });
+    }
+
+    const id = generateID();
+
     const newUser = {
-      id: `usr_${Date.now()}`,
+      id,
       username,
       password,
       tosAgreed,
       createdAt: new Date().toISOString(),
     };
 
-    users.push(newUser);
+    Users[id] = newUser;
+
     res.status(201).json({
       message: "User created successfully",
-      userId: newUser.id,
+      userId: id,
     });
   }
 );
@@ -79,13 +100,12 @@ usersRouter.put("/status", (req, res) => {
 
 usersRouter.delete("/:id", (req, res) => {
   const { id } = req.params;
-  const userIndex = users.findIndex((u) => u.id === id);
 
-  if (userIndex === -1) {
+  if (!Users[id]) {
     return res.status(404).json({ error: "User not found" });
   }
 
-  users.splice(userIndex, 1);
+  delete Users[id];
 
   res.json({ message: "Account and personal data deleted." });
 });
