@@ -5,6 +5,12 @@ export const currentUser = {
 };
 
 export function setCurrentUser(user) {
+  if (!user) {
+    currentUser.id = null;
+    currentUser.displayName = null;
+    currentUser.status = "BUSY";
+    return;
+  }
   currentUser.id = user.id;
   currentUser.displayName = user.username;
 }

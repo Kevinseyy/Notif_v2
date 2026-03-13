@@ -42,3 +42,10 @@ export const privacyModal = $("privacyModal");
 
 export const closeTosModalBtn = $("closeTosModalBtn");
 export const closePrivacyModalBtn = $("closePrivacyModalBtn");
+
+export const activeGroupView = $("activeGroupView");
+export const activeGroupTitle = $("activeGroupTitle");
+export const backToDashboardBtn = $("backToDashboardBtn");
+
+export const logoutBtn = $("logoutBtn");
+export const authActions = document.querySelector(".auth-actions");
