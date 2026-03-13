@@ -7,7 +7,13 @@ import {
   setError,
 } from "/ui/modals.mjs";
 
-import { addGroupTab, goToGroupView } from "/ui/views.mjs";
+import {
+  addGroupTab,
+  goToGroupView,
+  goBackToDashboard,
+  showLoggedOutUI,
+  showLoggedInUI,
+} from "/ui/views.mjs";
 import { renderMember } from "/ui/members.mjs";
 
 import {
@@ -30,6 +36,10 @@ import {
   privacyModal,
   closeTosModalBtn,
   closePrivacyModalBtn,
+  cancelCreateGroupBtn,
+  closeCreateGroupModalBtn,
+  backToDashboardBtn,
+  logoutBtn,
 } from "/utils/dom.mjs";
 
 createGroupBtn.addEventListener("click", openCreateGroupModal);
@@ -64,9 +74,14 @@ freeNowBtn.addEventListener("click", async () => {
 
 loginBtn.addEventListener("click", () => loginModal.showModal());
 registerBtn.addEventListener("click", () => registerModal.showModal());
+getStartedBtn.addEventListener("click", () => registerModal.showModal());
 
 closeLoginModalBtn.addEventListener("click", () => loginModal.close());
 closeRegisterModalBtn.addEventListener("click", () => registerModal.close());
+cancelCreateGroupBtn.addEventListener("click", () => createGroupModal.close());
+closeCreateGroupModalBtn.addEventListener("click", () =>
+  createGroupModal.close()
+);
 
 submitRegisterBtn.addEventListener("click", async () => {
   const username = document.getElementById("registerUsername").value.trim();
@@ -137,7 +152,15 @@ submitLoginBtn.addEventListener("click", async () => {
   document.getElementById("homeView").style.display = "none";
   document.getElementById("groupView").style.display = "flex";
 
+  showLoggedInUI();
+
   renderMember(currentUser.displayName, currentUser.status);
+});
+
+logoutBtn.addEventListener("click", () => {
+  setCurrentUser(null);
+  showLoggedOutUI();
+  console.log("User logged out");
 });
 
 [loginModal, registerModal].forEach((modal) => {
@@ -163,4 +186,8 @@ closePrivacyModalBtn.addEventListener("click", () => privacyModal.close());
   modal.addEventListener("click", (e) => {
     if (e.target === modal) modal.close();
   });
+});
+
+backToDashboardBtn.addEventListener("click", () => {
+  goBackToDashboard();
 });

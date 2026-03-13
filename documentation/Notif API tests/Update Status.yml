@@ -6,6 +6,12 @@ info:
 http:
   method: PUT
   url: "{{base_url}}/status"
+  body:
+    type: json
+    data: |-
+      {
+        "status": "FREE_NOW"
+      }
   auth: inherit
 
 settings:

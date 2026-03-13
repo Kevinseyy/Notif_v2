@@ -3,13 +3,13 @@ import { validateBody } from "../middleware/validateBody.mjs";
 
 export const usersRouter = express.Router();
 
-const Users = {};
+const users = [];
 
 function generateID() {
   let id = null;
   do {
     id = (Math.random() * Number.MAX_SAFE_INTEGER).toString(16);
-  } while (Users[id]);
+  } while (users[id]);
   return id;
 }
 
@@ -29,9 +29,7 @@ usersRouter.post(
       });
     }
 
-    const existingUser = Object.values(Users).find(
-      (u) => u.username === username
-    );
+    const existingUser = users.find((u) => u.username === username);
 
     if (existingUser) {
       return res.status(409).json({
@@ -49,7 +47,7 @@ usersRouter.post(
       createdAt: new Date().toISOString(),
     };
 
-    Users[id] = newUser;
+    users.push(newUser);
 
     res.status(201).json({
       message: "User created successfully",
@@ -101,11 +99,11 @@ usersRouter.put("/status", (req, res) => {
 usersRouter.delete("/:id", (req, res) => {
   const { id } = req.params;
 
-  if (!Users[id]) {
+  if (!users[id]) {
     return res.status(404).json({ error: "User not found" });
   }
 
-  delete Users[id];
+  delete users[id];
 
   res.json({ message: "Account and personal data deleted." });
 });
