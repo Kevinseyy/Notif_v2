@@ -40,6 +40,20 @@ import {
   closeCreateGroupModalBtn,
   backToDashboardBtn,
   logoutBtn,
+  editAccountBtn,
+  accountView,
+  accountUsername,
+  backFromAccountBtn,
+  homeView,
+  groupView,
+  changeUsernameBtn,
+  changeUsernameModal,
+  closeChangeUsernameModalBtn,
+  cancelChangeUsernameBtn,
+  submitChangeUsernameBtn,
+  changeUsernameInput,
+  changeUsernameError,
+  deleteAccountBtn,
 } from "/utils/dom.mjs";
 
 createGroupBtn.addEventListener("click", openCreateGroupModal);
@@ -190,4 +204,98 @@ closePrivacyModalBtn.addEventListener("click", () => privacyModal.close());
 
 backToDashboardBtn.addEventListener("click", () => {
   goBackToDashboard();
+});
+
+editAccountBtn.addEventListener("click", () => {
+  homeView.style.display = "none";
+  groupView.style.display = "none";
+  accountView.style.display = "flex";
+
+  accountUsername.textContent = currentUser.displayName;
+});
+
+backFromAccountBtn.addEventListener("click", () => {
+  accountView.style.display = "none";
+  groupView.style.display = "flex";
+});
+
+changeUsernameBtn.addEventListener("click", () => {
+  changeUsernameModal.showModal();
+});
+
+closeChangeUsernameModalBtn.addEventListener("click", () => {
+  changeUsernameModal.close();
+});
+
+cancelChangeUsernameBtn.addEventListener("click", () => {
+  changeUsernameModal.close();
+});
+
+submitChangeUsernameBtn.addEventListener("click", async () => {
+  const newUsername = changeUsernameInput.value.trim(); //
+
+  changeUsernameError.textContent = "";
+
+  try {
+    const res = await fetch("/api/v1/username", {
+      method: "PUT",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        userId: currentUser.id,
+        newUsername: newUsername,
+      }),
+    });
+
+    const data = await res.json();
+
+    if (!res.ok) {
+      changeUsernameError.textContent = data.error || "Update failed";
+      return;
+    }
+
+    setCurrentUser({
+      ...currentUser,
+      username: data.username,
+      displayName: data.username,
+    });
+
+    accountUsername.textContent = data.username;
+
+    changeUsernameModal.close();
+    changeUsernameInput.value = "";
+
+    alert("Username updated!");
+  } catch (err) {
+    changeUsernameError.textContent = "An error occurred. Please try again.";
+  }
+});
+
+deleteAccountBtn.addEventListener("click", async () => {
+  const confirmed = confirm(
+    "Are you sure? This will permanently delete your account."
+  );
+
+  if (!confirmed) return;
+
+  try {
+    const res = await fetch(`/api/v1/${currentUser.id}`, {
+      method: "DELETE",
+    });
+
+    if (!res.ok) {
+      const data = await res.json();
+      alert(data.error || "Failed to delete account");
+      return;
+    }
+
+    alert("Your account has been deleted.");
+
+    setCurrentUser(null);
+    showLoggedOutUI();
+  } catch (err) {
+    console.error("Delete error:", err);
+    alert("An error occurred while trying to delete your account.");
+  }
 });

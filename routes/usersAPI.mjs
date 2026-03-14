@@ -96,14 +96,46 @@ usersRouter.put("/status", (req, res) => {
   });
 });
 
-usersRouter.delete("/:id", (req, res) => {
-  const { id } = req.params;
+usersRouter.put("/username", (req, res) => {
+  const { userId, newUsername } = req.body;
 
-  if (!users[id]) {
+  if (!newUsername || newUsername.trim().length < 3) {
+    return res.status(400).json({
+      error: "Username must be at least 3 characters.",
+    });
+  }
+
+  const isTaken = users.find((u) => u.username === newUsername.trim());
+  if (isTaken) {
+    return res.status(409).json({
+      error: "Username already taken",
+    });
+  }
+
+  const user = users.find((u) => u.id === userId);
+
+  if (!user) {
     return res.status(404).json({ error: "User not found" });
   }
 
-  delete users[id];
+  user.username = newUsername.trim();
+
+  res.json({
+    message: "Username updated successfully",
+    username: user.username,
+  });
+});
+
+usersRouter.delete("/:id", (req, res) => {
+  const { id } = req.params;
+
+  const userIndex = users.findIndex((u) => u.id === id);
+
+  if (userIndex === -1) {
+    return res.status(404).json({ error: "User not found" });
+  }
+
+  users.splice(userIndex, 1);
 
   res.json({ message: "Account and personal data deleted." });
 });
