@@ -49,3 +49,19 @@ export const backToDashboardBtn = $("backToDashboardBtn");
 
 export const logoutBtn = $("logoutBtn");
 export const authActions = document.querySelector(".auth-actions");
+
+export const editAccountBtn = $("editAccountBtn");
+export const accountView = $("accountView");
+export const backFromAccountBtn = $("backFromAccountBtn");
+export const accountUsername = $("accountUsername");
+
+export const changeUsernameModal = $("changeUsernameModal");
+export const changeUsernameBtn = $("changeUsernameBtn");
+export const closeChangeUsernameModalBtn = $("closeChangeUsernameModalBtn");
+export const cancelChangeUsernameBtn = $("cancelChangeUsernameBtn");
+
+export const changeUsernameInput = $("changeUsernameInput");
+export const submitChangeUsernameBtn = $("submitChangeUsernameBtn");
+export const changeUsernameError = $("changeUsernameError");
+
+export const deleteAccountBtn = $("deleteAccountBtn");

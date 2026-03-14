@@ -20,6 +20,10 @@
 <div class="auth-actions">
 <button class="ghost-btn" id="loginBtn">LOGIN</button>
 <button class="ghost-btn" id="registerBtn">REGISTER</button>
+
+<button class="ghost-btn" id="editAccountBtn" style="display:none;">
+  EDIT
+  </button>
 <button class="ghost-btn" id="logoutBtn" style="display:none;">LOG OUT</button>
 </div>
 
@@ -56,8 +60,6 @@ Get Started
 </button>
 
 </div>
-
-
 </main>
 
 
@@ -97,6 +99,66 @@ Get Started
   </section>
 </div>
 </main>
+
+
+
+
+<main class="content" id="accountView" style="display:none;">
+
+  <div class="layout">
+  
+  <section class="panel">
+  
+  <h2 id="accountUsername">Name of user</h2>
+  
+  <div class="cta-column">
+  <button class="secondary-btn" id="changeUsernameBtn">
+  Change username
+  </button>
+  
+  <button class="secondary-btn" id="deleteAccountBtn">
+  Delete Account
+  </button>
+  
+  <button class="secondary-btn" id="backFromAccountBtn">
+  Back
+  </button>
+  </div>
+  
+  </section>
+  
+  </div>
+ </main>
+
+  <dialog class="modal" id="changeUsernameModal">
+
+    <div class="modal-card">
+    
+    <div class="modal-header">
+    <h2>Change Username</h2>
+    <button class="icon-btn" id="closeChangeUsernameModalBtn">✕</button>
+    </div>
+    
+    <div class="field">
+    <span>New Username</span>
+    <input id="changeUsernameInput" type="text" placeholder="New username" />
+    </div>
+    
+    <p class="form-error" id="changeUsernameError"></p>
+    
+    <div class="cta-row">
+    <button class="secondary-btn" id="cancelChangeUsernameBtn">
+    Cancel
+    </button>
+    
+    <button class="primary-btn" id="submitChangeUsernameBtn">
+    Save
+    </button>
+    </div>
+    
+    </div>
+    
+    </dialog>
 
 
 
