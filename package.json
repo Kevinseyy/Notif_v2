@@ -2,7 +2,7 @@
   "name": "notif_v2",
   "version": "1.0.0",
   "description": "The application that I want to make may seem simple, but valuable. The main reason I want to create this app is to make it easier for friends to keep in contact. I've noticed now that I'm getting older, my friend group doesn't talk to each other everyday anymore like we used to because of jobs and some being students. Because of this, reaching out may seem inconvenient and maybe some may see it as disturbing the other. So to counter this effect, I would like to make an application that makes it easy for friends to connect without needing to feel like you can't.",
-  "main": "index.js",
+  "main": "server.mjs",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
@@ -13,7 +13,6 @@
   "keywords": [],
   "author": "",
   "license": "ISC",
-  "type": "commonjs",
   "bugs": {
     "url": "https://github.com/Kevinseyy/Notif_v2/issues"
   },
