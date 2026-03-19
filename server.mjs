@@ -1,4 +1,8 @@
-import "dotenv/config";
+if (process.env.NODE_ENV !== "production") {
+  const { default: dotenv } = await import("dotenv");
+  dotenv.config();
+}
+
 import express from "express";
 import { contentRouter } from "./routes/contentAPI.mjs";
 import { usersRouter } from "./routes/usersAPI.mjs";

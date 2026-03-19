@@ -18,8 +18,10 @@
   },
   "homepage": "https://github.com/Kevinseyy/Notif_v2#readme",
   "dependencies": {
-    "dotenv": "^17.3.1",
     "express": "^5.2.1",
     "pg": "^8.20.0"
+  },
+  "devDependencies": {
+    "dotenv": "^17.3.1"
   }
 }
