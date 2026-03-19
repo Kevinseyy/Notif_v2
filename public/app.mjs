@@ -1,4 +1,4 @@
-import { createGroup, updateStatus } from "/api/groupApi.mjs";
+import { createGroup, getGroups, updateStatus } from "/api/groupApi.mjs";
 import { currentUser, setStatus, setCurrentUser } from "/state/appState.mjs";
 
 import {
@@ -160,6 +160,13 @@ submitLoginBtn.addEventListener("click", async () => {
     id: data.userId,
     username: data.username,
   });
+
+  try {
+    const groups = await getGroups();
+    groups.forEach((group) => addGroupTab(group));
+  } catch (err) {
+    console.error("Error loading groups:", err);
+  }
 
   loginModal.close();
 

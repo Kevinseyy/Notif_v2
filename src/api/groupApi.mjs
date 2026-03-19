@@ -13,6 +13,12 @@ export async function createGroup(name) {
   return res.json();
 }
 
+export async function getGroups() {
+  const res = await fetch("/api/v1/groups");
+  if (!res.ok) throw new Error("Could not load groups");
+  return res.json();
+}
+
 export async function updateStatus(status) {
   const res = await fetch("/api/v1/status", {
     method: "PUT",
