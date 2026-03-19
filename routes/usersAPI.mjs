@@ -1,17 +1,8 @@
 import express from "express";
 import { validateBody } from "../middleware/validateBody.mjs";
+import pool from "../database/database.mjs";
 
 export const usersRouter = express.Router();
-
-const users = [];
-
-function generateID() {
-  let id = null;
-  do {
-    id = (Math.random() * Number.MAX_SAFE_INTEGER).toString(16);
-  } while (users[id]);
-  return id;
-}
 
 usersRouter.post(
   "/",
@@ -20,7 +11,7 @@ usersRouter.post(
     password: { required: true, type: "string", minLength: 6 },
     tosAgreed: { required: true, type: "boolean" },
   }),
-  (req, res) => {
+  async (req, res) => {
     const { username, password, tosAgreed } = req.body;
 
     if (!tosAgreed) {
@@ -29,74 +20,54 @@ usersRouter.post(
       });
     }
 
-    const existingUser = users.find((u) => u.username === username);
+    try {
+      const result = await pool.query(
+        "INSERT INTO users (username, password, tos_agreed) VALUES ($1, $2, $3) RETURNING id, username, created_at",
+        [username, password, tosAgreed]
+      );
 
-    if (existingUser) {
-      return res.status(409).json({
-        error: "Username already taken",
+      res.status(201).json({
+        message: "User created successfully",
+        userId: result.rows[0].id,
       });
+    } catch (err) {
+      if (err.code === "23505") {
+        return res.status(409).json({ error: "Username already taken" });
+      }
+      res.status(500).json({ error: err.message });
     }
-
-    const id = generateID();
-
-    const newUser = {
-      id,
-      username,
-      password,
-      tosAgreed,
-      createdAt: new Date().toISOString(),
-    };
-
-    users.push(newUser);
-
-    res.status(201).json({
-      message: "User created successfully",
-      userId: id,
-    });
   }
 );
 
-usersRouter.post("/login", (req, res) => {
+usersRouter.post("/login", async (req, res) => {
   const { username, password } = req.body;
 
-  console.log("Current users:", users);
+  try {
+    const result = await pool.query("SELECT * FROM users WHERE username = $1", [
+      username,
+    ]);
 
-  const user = users.find((u) => u.username === username);
+    if (result.rows.length === 0) {
+      return res.status(404).json({ error: "User not found" });
+    }
 
-  if (!user) {
-    return res.status(404).json({
-      error: "User not found",
+    const user = result.rows[0];
+
+    if (user.password !== password) {
+      return res.status(401).json({ error: "Incorrect password" });
+    }
+
+    res.json({
+      message: "Login successful",
+      userId: user.id,
+      username: user.username,
     });
+  } catch (err) {
+    res.status(500).json({ error: err.message });
   }
-
-  if (user.password !== password) {
-    return res.status(401).json({
-      error: "Incorrect password",
-    });
-  }
-
-  res.json({
-    message: "Login successful",
-    userId: user.id,
-    username: user.username,
-  });
 });
 
-usersRouter.put("/status", (req, res) => {
-  const { status } = req.body;
-
-  if (!status) {
-    return res.status(400).json({
-      error: "Status is required",
-    });
-  }
-
-  res.json({
-    status,
-  });
-});
-
-usersRouter.put("/username", (req, res) => {
+usersRouter.put("/username", async (req, res) => {
   const { userId, newUsername } = req.body;
 
   if (!newUsername || newUsername.trim().length < 3) {
@@ -105,37 +76,53 @@ usersRouter.put("/username", (req, res) => {
     });
   }
 
-  const isTaken = users.find((u) => u.username === newUsername.trim());
-  if (isTaken) {
-    return res.status(409).json({
-      error: "Username already taken",
+  try {
+    const result = await pool.query(
+      "UPDATE users SET username = $1 WHERE id = $2 RETURNING username",
+      [newUsername.trim(), userId]
+    );
+
+    if (result.rows.length === 0) {
+      return res.status(404).json({ error: "User not found" });
+    }
+
+    res.json({
+      message: "Username updated successfully",
+      username: result.rows[0].username,
     });
+  } catch (err) {
+    if (err.code === "23505") {
+      return res.status(409).json({ error: "Username already taken" });
+    }
+    res.status(500).json({ error: err.message });
   }
-
-  const user = users.find((u) => u.id === userId);
-
-  if (!user) {
-    return res.status(404).json({ error: "User not found" });
-  }
-
-  user.username = newUsername.trim();
-
-  res.json({
-    message: "Username updated successfully",
-    username: user.username,
-  });
 });
 
-usersRouter.delete("/:id", (req, res) => {
-  const { id } = req.params;
+usersRouter.put("/status", (req, res) => {
+  const { status } = req.body;
 
-  const userIndex = users.findIndex((u) => u.id === id);
-
-  if (userIndex === -1) {
-    return res.status(404).json({ error: "User not found" });
+  if (!status) {
+    return res.status(400).json({ error: "Status is required" });
   }
 
-  users.splice(userIndex, 1);
+  res.json({ status });
+});
 
-  res.json({ message: "Account and personal data deleted." });
+usersRouter.delete("/:id", async (req, res) => {
+  const { id } = req.params;
+
+  try {
+    const result = await pool.query(
+      "DELETE FROM users WHERE id = $1 RETURNING id",
+      [id]
+    );
+
+    if (result.rows.length === 0) {
+      return res.status(404).json({ error: "User not found" });
+    }
+
+    res.json({ message: "Account and personal data deleted." });
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
 });
