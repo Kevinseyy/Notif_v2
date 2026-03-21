@@ -1,302 +1,269 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-<meta charset="UTF-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<title>Notif</title>
-<link href="style.css" rel="stylesheet" />
-</head>
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Notif</title>
+    <link href="style.css" rel="stylesheet" />
+  </head>
+  <body>
+    <div class="page">
+      <header class="topbar">
+        <button class="icon-btn" id="gearBtn">☰</button>
+        <div class="brand">NOTIF</div>
+        <div class="auth-actions">
+          <button class="ghost-btn" id="loginBtn">LOGIN</button>
+          <button class="ghost-btn" id="registerBtn">REGISTER</button>
+          <button class="ghost-btn" id="editAccountBtn" style="display: none">
+            EDIT
+          </button>
+          <button class="ghost-btn" id="logoutBtn" style="display: none">
+            LOG OUT
+          </button>
+        </div>
+      </header>
 
-<body>
+      <main class="content" id="homeView">
+        <div class="layout">
+          <section class="panel right">
+            <h1>Start plans faster.</h1>
+            <p>
+              NOTIF lets you share your availability with a selected group of
+              friends. When someone switches to <strong>Free now</strong>,
+              everyone gets one simple notification.
+            </p>
+            <p class="muted">No long message threads. Just quick signals.</p>
+            <div class="cta-row">
+              <button class="secondary-btn" id="learnMoreBtn">
+                Learn more
+              </button>
+            </div>
+            <div class="home-bottom">
+              <h2>No mixed signals</h2>
+              <button class="primary-btn" id="getStartedBtn">
+                Get Started
+              </button>
+            </div>
+          </section>
+        </div>
+      </main>
 
-<div class="page">
+      <main class="content dashboard-view" id="groupView" style="display: none">
+        <div class="dashboard-header">
+          <button class="primary-btn" id="createGroupBtn">Create Group</button>
+          <button class="secondary-btn" id="joinBtn">Join</button>
+          <button class="secondary-btn" id="howItWorksBtn">How it works</button>
+        </div>
+        <section class="panel dashboard-panel">
+          <div id="groupsList" class="groups-list">
+            <p class="muted">List of the groups you are apart of</p>
+          </div>
+        </section>
+      </main>
 
-<header class="topbar">
+      <main class="content" id="activeGroupView" style="display: none">
+        <div class="active-group-layout">
+          <div class="group-header-actions">
+            <button class="secondary-btn" id="backToDashboardBtn">Back</button>
+            <button class="primary-btn free-now-btn" id="freeNowBtn">
+              Free now
+            </button>
+            <button class="secondary-btn" id="codeBtn">Code</button>
+          </div>
+          <section class="panel group-panel">
+            <h2 id="activeGroupTitle"></h2>
+            <div id="memberList" class="member-list"></div>
+          </section>
+        </div>
+      </main>
 
-<button class="icon-btn" id="gearBtn">☰</button>
+      <main class="content" id="accountView" style="display: none">
+        <div class="layout">
+          <section class="panel">
+            <h2 id="accountUsername">Name of user</h2>
+            <div class="cta-column">
+              <button class="secondary-btn" id="changeUsernameBtn">
+                Change username
+              </button>
+              <button class="secondary-btn" id="deleteAccountBtn">
+                Delete Account
+              </button>
+              <button class="secondary-btn" id="backFromAccountBtn">
+                Back
+              </button>
+            </div>
+          </section>
+        </div>
+      </main>
 
-<div class="brand">NOTIF</div>
+      <dialog class="modal" id="joinGroupModal">
+        <div class="modal-card">
+          <div class="modal-header">
+            <h2>Join a Group</h2>
+            <button class="icon-btn" id="closeJoinModalBtn">✕</button>
+          </div>
+          <div class="field">
+            <span>Enter invite code</span>
+            <input id="joinCodeInput" type="text" placeholder="ABC123" />
+          </div>
+          <p class="form-error" id="joinGroupError"></p>
+          <div class="cta-row">
+            <button class="secondary-btn" id="cancelJoinBtn">Cancel</button>
+            <button class="primary-btn" id="submitJoinBtn">Join</button>
+          </div>
+        </div>
+      </dialog>
 
-<div class="auth-actions">
-<button class="ghost-btn" id="loginBtn">LOGIN</button>
-<button class="ghost-btn" id="registerBtn">REGISTER</button>
+      <dialog class="modal" id="groupCodeModal">
+        <div class="modal-card">
+          <div class="modal-header">
+            <h2>Invite Code</h2>
+            <button class="icon-btn" id="closeGroupCodeModalBtn">✕</button>
+          </div>
+          <p class="muted">Share this code with friends so they can join:</p>
+          <h1
+            id="groupCodeDisplay"
+            style="text-align: center; letter-spacing: 8px"
+          ></h1>
+          <div class="cta-row">
+            <button class="primary-btn full-width" id="copyCodeBtn">
+              Copy Code
+            </button>
+          </div>
+        </div>
+      </dialog>
 
-<button class="ghost-btn" id="editAccountBtn" style="display:none;">
-  EDIT
-  </button>
-<button class="ghost-btn" id="logoutBtn" style="display:none;">LOG OUT</button>
-</div>
+      <dialog class="modal" id="changeUsernameModal">
+        <div class="modal-card">
+          <div class="modal-header">
+            <h2>Change Username</h2>
+            <button class="icon-btn" id="closeChangeUsernameModalBtn">✕</button>
+          </div>
+          <div class="field">
+            <span>New Username</span>
+            <input
+              id="changeUsernameInput"
+              type="text"
+              placeholder="New username"
+            />
+          </div>
+          <p class="form-error" id="changeUsernameError"></p>
+          <div class="cta-row">
+            <button class="secondary-btn" id="cancelChangeUsernameBtn">
+              Cancel
+            </button>
+            <button class="primary-btn" id="submitChangeUsernameBtn">
+              Save
+            </button>
+          </div>
+        </div>
+      </dialog>
 
-</header>
+      <dialog class="modal" id="createGroupModal">
+        <div class="modal-card">
+          <div class="modal-header">
+            <h2>Create group</h2>
+            <button class="icon-btn" id="closeCreateGroupModalBtn">✕</button>
+          </div>
+          <div class="field">
+            <span>Group name</span>
+            <input id="groupNameInput" type="text" placeholder="Game night" />
+          </div>
+          <p class="form-error" id="createGroupError"></p>
+          <div class="cta-row">
+            <button class="secondary-btn" id="cancelCreateGroupBtn">
+              Cancel
+            </button>
+            <button class="primary-btn" id="submitCreateGroupBtn">
+              Create
+            </button>
+          </div>
+        </div>
+      </dialog>
 
+      <dialog class="modal" id="loginModal">
+        <div class="modal-card">
+          <div class="modal-header">
+            <h2>Login</h2>
+            <button class="icon-btn" id="closeLoginModalBtn">✕</button>
+          </div>
+          <div class="field">
+            <span>Username</span>
+            <input id="loginUsername" type="text" />
+          </div>
+          <div class="field">
+            <span>Password</span>
+            <input id="loginPassword" type="password" />
+          </div>
+          <p class="form-error" id="loginError"></p>
+          <div class="cta-row">
+            <button class="primary-btn full-width" id="submitLoginBtn">
+              Login
+            </button>
+          </div>
+        </div>
+      </dialog>
 
-<main class="content" id="homeView">
+      <
+      <dialog class="modal" id="registerModal">
+        <div class="modal-card">
+          <div class="modal-header">
+            <h2>Create Account</h2>
+            <button class="icon-btn" id="closeRegisterModalBtn">✕</button>
+          </div>
+          <div class="field">
+            <span>Username</span>
+            <input id="registerUsername" type="text" />
+          </div>
+          <div class="field">
+            <span>Password</span>
+            <input id="registerPassword" type="password" />
+          </div>
+          <div class="consent-box">
+            <label class="checkbox-container">
+              <input type="checkbox" id="tosConsent" />
+              <span class="consent-text">
+                I agree to the
+                <a href="#" id="viewTos">Terms of Service</a>
+                and
+                <a href="#" id="viewPrivacy">Privacy Policy</a>.
+              </span>
+            </label>
+          </div>
+          <p class="form-error" id="registerError"></p>
+          <div class="cta-row">
+            <button class="primary-btn full-width" id="submitRegisterBtn">
+              Register
+            </button>
+          </div>
+        </div>
+      </dialog>
 
-<div class="layout">
+      <dialog class="modal" id="tosModal">
+        <div class="modal-card">
+          <div class="modal-header">
+            <h2>Terms of Service</h2>
+            <button class="icon-btn" id="closeTosModalBtn">✕</button>
+          </div>
+          <div class="legal-content">
+            <p>ToS</p>
+          </div>
+        </div>
+      </dialog>
 
-<section class="panel right">
-
-<h1>Start plans faster.</h1>
-
-<p>
-NOTIF lets you share your availability with a selected group of friends.
-When someone switches to <strong>Free now</strong>, everyone gets one simple notification.
-</p>
-
-<p class="muted">
-No long message threads. Just quick signals.
-</p>
-
-<div class="cta-row">
-<button class="secondary-btn" id="learnMoreBtn">Learn more</button>
-</div>
-
-<div class="home-bottom">
-
-<h2>No mixed signals</h2>
-
-<button class="primary-btn" id="getStartedBtn">
-Get Started
-</button>
-
-</div>
-</main>
-
-
-
-
-<main class="content dashboard-view" id="groupView" style="display:none;">
-
-  <div class="dashboard-header">
-    <button class="primary-btn" id="createGroupBtn">Create Group</button>
-    <button class="secondary-btn" id="inviteBtn">Invites</button>
-    <button class="secondary-btn" id="howItWorksBtn">How it works</button>
-  </div>
-
-  <section class="panel dashboard-panel">
-    <div id="groupsList" class="groups-list">
-      <p class="muted">List of the groups you are apart of</p>
+      <dialog class="modal" id="privacyModal">
+        <div class="modal-card">
+          <div class="modal-header">
+            <h2>Privacy Policy</h2>
+            <button class="icon-btn" id="closePrivacyModalBtn">✕</button>
+          </div>
+          <div class="legal-content">
+            <p>Privacy</p>
+          </div>
+        </div>
+      </dialog>
     </div>
-  </section>
 
-</main>
-
-<main class="content" id="activeGroupView" style="display:none;">
-  <div class="active-group-layout">
-    <div class="group-header-actions">
-
-  <button class="secondary-btn" id="backToDashboardBtn">Back</button>
-  <button class="primary-btn free-now-btn" id="freeNowBtn">
-    Free now
-  </button>
-  <button class="secondary-btn" id="inviteToGroupBtn">Invite</button>
-  </div>
-
-  <section class="panel group-panel">
-    <h2 id="activeGroupTitle"></h2>
-    <div id="memberList" class="member-list">
-      </div>
-  </section>
-</div>
-</main>
-
-
-
-
-<main class="content" id="accountView" style="display:none;">
-
-  <div class="layout">
-  
-  <section class="panel">
-  
-  <h2 id="accountUsername">Name of user</h2>
-  
-  <div class="cta-column">
-  <button class="secondary-btn" id="changeUsernameBtn">
-  Change username
-  </button>
-  
-  <button class="secondary-btn" id="deleteAccountBtn">
-  Delete Account
-  </button>
-  
-  <button class="secondary-btn" id="backFromAccountBtn">
-  Back
-  </button>
-  </div>
-  
-  </section>
-  
-  </div>
- </main>
-
-  <dialog class="modal" id="changeUsernameModal">
-
-    <div class="modal-card">
-    
-    <div class="modal-header">
-    <h2>Change Username</h2>
-    <button class="icon-btn" id="closeChangeUsernameModalBtn">✕</button>
-    </div>
-    
-    <div class="field">
-    <span>New Username</span>
-    <input id="changeUsernameInput" type="text" placeholder="New username" />
-    </div>
-    
-    <p class="form-error" id="changeUsernameError"></p>
-    
-    <div class="cta-row">
-    <button class="secondary-btn" id="cancelChangeUsernameBtn">
-    Cancel
-    </button>
-    
-    <button class="primary-btn" id="submitChangeUsernameBtn">
-    Save
-    </button>
-    </div>
-    
-    </div>
-    
-    </dialog>
-
-
-
-
-
-<!-- CREATE GROUP MODAL -->
-<dialog class="modal" id="createGroupModal">
-<div class="modal-card">
-
-<div class="modal-header">
-<h2>Create group</h2>
-<button class="icon-btn" id="closeCreateGroupModalBtn">✕</button>
-</div>
-
-<div class="field">
-<span>Group name</span>
-<input id="groupNameInput" type="text" placeholder="Game night" />
-</div>
-
-<p class="form-error" id="createGroupError"></p>
-
-<div class="cta-row">
-<button class="secondary-btn" id="cancelCreateGroupBtn">Cancel</button>
-<button class="primary-btn" id="submitCreateGroupBtn">Create</button>
-</div>
-
-</div>
-</dialog>
-
-
-
-<!-- LOGIN MODAL -->
-<dialog class="modal" id="loginModal">
-
-<div class="modal-card">
-
-<div class="modal-header">
-<h2>Login</h2>
-<button class="icon-btn" id="closeLoginModalBtn">✕</button>
-</div>
-
-<div class="field">
-<span>Username</span>
-<input id="loginUsername" type="text" />
-</div>
-
-<div class="field">
-<span>Password</span>
-<input id="loginPassword" type="password" />
-</div>
-
-<p class="form-error" id="loginError"></p>
-
-<div class="cta-row">
-<button class="primary-btn full-width" id="submitLoginBtn">
-Login
-</button>
-</div>
-
-</div>
-
-</dialog>
-
-<dialog class="modal" id="tosModal">
-  <div class="modal-card">
-    <div class="modal-header">
-      <h2>Terms of Service</h2>
-      <button class="icon-btn" id="closeTosModalBtn">✕</button>
-    </div>
-    <div class="legal-content">
-      <p>ToS</p>
-    </div>
-  </div>
-</dialog>
-
-<dialog class="modal" id="privacyModal">
-  <div class="modal-card">
-    <div class="modal-header">
-      <h2>Privacy Policy</h2>
-      <button class="icon-btn" id="closePrivacyModalBtn">✕</button>
-    </div>
-    <div class="legal-content">
-      <p>Privacy</p>
-    </div>
-  </div>
-</dialog>
-
-
-<!-- REGISTER MODAL -->
-<dialog class="modal" id="registerModal">
-
-<div class="modal-card">
-
-<div class="modal-header">
-<h2>Create Account</h2>
-<button class="icon-btn" id="closeRegisterModalBtn">✕</button>
-</div>
-
-<div class="field">
-<span>Username</span>
-<input id="registerUsername" type="text" />
-</div>
-
-<div class="field">
-<span>Password</span>
-<input id="registerPassword" type="password" />
-</div>
-
-<div class="consent-box">
-<label class="checkbox-container">
-
-<input type="checkbox" id="tosConsent">
-
-<span class="consent-text">
-I agree to the
-<a href="#" id="viewTos">Terms of Service</a>
-and
-<a href="#" id="viewPrivacy">Privacy Policy</a>.
-</span>
-
-</label>
-</div>
-
-<p class="form-error" id="registerError"></p>
-
-<div class="cta-row">
-<button class="primary-btn full-width" id="submitRegisterBtn">
-Register
-</button>
-</div>
-
-</div>
-
-</dialog>
-
-
-
-<script src="./app.mjs" type="module"></script>
-
-</body>
+    <script src="./app.mjs" type="module"></script>
+  </body>
 </html>

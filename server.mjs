@@ -29,6 +29,15 @@ await pool.query(`
   )
 `);
 
+await pool.query(`
+  CREATE TABLE IF NOT EXISTS groups (
+    id SERIAL PRIMARY KEY,
+    name VARCHAR(100) NOT NULL,
+    join_code VARCHAR(10) UNIQUE NOT NULL,
+    created_at TIMESTAMP DEFAULT NOW()
+  )
+`);
+
 console.log("Database ready");
 
 app.listen(PORT, () => {

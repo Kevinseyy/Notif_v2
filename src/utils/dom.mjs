@@ -17,9 +17,20 @@ export const submitCreateGroupBtn = $("submitCreateGroupBtn");
 export const groupNameInput = $("groupNameInput");
 export const createGroupError = $("createGroupError");
 
-export const inviteBtn = $("inviteBtn");
-export const inviteModal = $("inviteModal");
-export const closeInviteModalBtn = $("closeInviteModalBtn");
+export const joinBtn = $("joinBtn");
+export const codeBtn = $("codeBtn");
+
+export const joinGroupModal = $("joinGroupModal");
+export const closeJoinModalBtn = $("closeJoinModalBtn");
+export const cancelJoinBtn = $("cancelJoinBtn");
+export const submitJoinBtn = $("submitJoinBtn");
+export const joinCodeInput = $("joinCodeInput");
+export const joinGroupError = $("joinGroupError");
+
+export const groupCodeModal = $("groupCodeModal");
+export const closeGroupCodeModalBtn = $("closeGroupCodeModalBtn");
+export const groupCodeDisplay = $("groupCodeDisplay");
+export const copyCodeBtn = $("copyCodeBtn");
 
 export const loginBtn = $("loginBtn");
 export const registerBtn = $("registerBtn");

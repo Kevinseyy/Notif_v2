@@ -1,4 +1,9 @@
-import { createGroup, getGroups, updateStatus } from "/api/groupApi.mjs";
+import {
+  createGroup,
+  getGroups,
+  updateStatus,
+  joinGroup,
+} from "/api/groupApi.mjs";
 import { currentUser, setStatus, setCurrentUser } from "/state/appState.mjs";
 
 import {
@@ -54,7 +59,10 @@ import {
   changeUsernameInput,
   changeUsernameError,
   deleteAccountBtn,
+  createGroupModal,
 } from "/utils/dom.mjs";
+
+let currentGroup = null;
 
 createGroupBtn.addEventListener("click", openCreateGroupModal);
 
@@ -70,19 +78,71 @@ submitCreateGroupBtn.addEventListener("click", async () => {
     const group = await createGroup(name);
     addGroupTab(group);
     closeCreateGroupModal();
+    currentGroup = group;
     goToGroupView(group);
   } catch (err) {
     setError(err.message);
   }
 });
 
+document.getElementById("joinBtn").addEventListener("click", () => {
+  document.getElementById("joinGroupModal").showModal();
+});
+
+document.getElementById("closeJoinModalBtn").addEventListener("click", () => {
+  document.getElementById("joinGroupModal").close();
+});
+
+document.getElementById("cancelJoinBtn").addEventListener("click", () => {
+  document.getElementById("joinGroupModal").close();
+});
+
+document.getElementById("submitJoinBtn").addEventListener("click", async () => {
+  const code = document.getElementById("joinCodeInput").value.trim();
+  const error = document.getElementById("joinGroupError");
+  error.textContent = "";
+
+  if (!code) {
+    error.textContent = "Please enter a code.";
+    return;
+  }
+
+  try {
+    const group = await joinGroup(code);
+    addGroupTab(group);
+    document.getElementById("joinGroupModal").close();
+    document.getElementById("joinCodeInput").value = "";
+    currentGroup = group;
+    goToGroupView(group);
+  } catch (err) {
+    error.textContent = err.message;
+  }
+});
+
+document.getElementById("codeBtn").addEventListener("click", () => {
+  document.getElementById("groupCodeDisplay").textContent =
+    currentGroup.join_code;
+  document.getElementById("groupCodeModal").showModal();
+});
+
+document
+  .getElementById("closeGroupCodeModalBtn")
+  .addEventListener("click", () => {
+    document.getElementById("groupCodeModal").close();
+  });
+
+document.getElementById("copyCodeBtn").addEventListener("click", () => {
+  navigator.clipboard.writeText(currentGroup.join_code);
+  document.getElementById("copyCodeBtn").textContent = "Copied!";
+  setTimeout(() => {
+    document.getElementById("copyCodeBtn").textContent = "Copy Code";
+  }, 2000);
+});
+
 freeNowBtn.addEventListener("click", async () => {
   const newStatus = currentUser.status === "FREE" ? "BUSY" : "FREE";
-
   const data = await updateStatus(newStatus);
-
   setStatus(data.status);
-
   renderMember(currentUser.displayName, data.status);
 });
 
@@ -106,18 +166,10 @@ submitRegisterBtn.addEventListener("click", async () => {
     return;
   }
 
-  console.log("Sending register request...");
-
   const res = await fetch("/api/v1/", {
     method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-    },
-    body: JSON.stringify({
-      username,
-      password,
-      tosAgreed: true,
-    }),
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ username, password, tosAgreed: true }),
   });
 
   const data = await res.json();
@@ -126,8 +178,6 @@ submitRegisterBtn.addEventListener("click", async () => {
     alert(data.error || "Registration failed");
     return;
   }
-
-  console.log("User created:", data.userId);
 
   registerModal.close();
 });
@@ -138,13 +188,8 @@ submitLoginBtn.addEventListener("click", async () => {
 
   const res = await fetch("/api/v1/login", {
     method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-    },
-    body: JSON.stringify({
-      username,
-      password,
-    }),
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ username, password }),
   });
 
   const data = await res.json();
@@ -154,12 +199,7 @@ submitLoginBtn.addEventListener("click", async () => {
     return;
   }
 
-  console.log("Login successful:", data.username);
-
-  setCurrentUser({
-    id: data.userId,
-    username: data.username,
-  });
+  setCurrentUser({ id: data.userId, username: data.username });
 
   try {
     const groups = await getGroups();
@@ -174,14 +214,13 @@ submitLoginBtn.addEventListener("click", async () => {
   document.getElementById("groupView").style.display = "flex";
 
   showLoggedInUI();
-
   renderMember(currentUser.displayName, currentUser.status);
 });
 
 logoutBtn.addEventListener("click", () => {
   setCurrentUser(null);
+  currentGroup = null;
   showLoggedOutUI();
-  console.log("User logged out");
 });
 
 [loginModal, registerModal].forEach((modal) => {
@@ -210,6 +249,7 @@ closePrivacyModalBtn.addEventListener("click", () => privacyModal.close());
 });
 
 backToDashboardBtn.addEventListener("click", () => {
+  currentGroup = null;
   goBackToDashboard();
 });
 
@@ -217,7 +257,6 @@ editAccountBtn.addEventListener("click", () => {
   homeView.style.display = "none";
   groupView.style.display = "none";
   accountView.style.display = "flex";
-
   accountUsername.textContent = currentUser.displayName;
 });
 
@@ -226,33 +265,25 @@ backFromAccountBtn.addEventListener("click", () => {
   groupView.style.display = "flex";
 });
 
-changeUsernameBtn.addEventListener("click", () => {
-  changeUsernameModal.showModal();
-});
-
-closeChangeUsernameModalBtn.addEventListener("click", () => {
-  changeUsernameModal.close();
-});
-
-cancelChangeUsernameBtn.addEventListener("click", () => {
-  changeUsernameModal.close();
-});
+changeUsernameBtn.addEventListener("click", () =>
+  changeUsernameModal.showModal()
+);
+closeChangeUsernameModalBtn.addEventListener("click", () =>
+  changeUsernameModal.close()
+);
+cancelChangeUsernameBtn.addEventListener("click", () =>
+  changeUsernameModal.close()
+);
 
 submitChangeUsernameBtn.addEventListener("click", async () => {
-  const newUsername = changeUsernameInput.value.trim(); //
-
+  const newUsername = changeUsernameInput.value.trim();
   changeUsernameError.textContent = "";
 
   try {
     const res = await fetch("/api/v1/username", {
       method: "PUT",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({
-        userId: currentUser.id,
-        newUsername: newUsername,
-      }),
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ userId: currentUser.id, newUsername }),
     });
 
     const data = await res.json();
@@ -267,12 +298,9 @@ submitChangeUsernameBtn.addEventListener("click", async () => {
       username: data.username,
       displayName: data.username,
     });
-
     accountUsername.textContent = data.username;
-
     changeUsernameModal.close();
     changeUsernameInput.value = "";
-
     alert("Username updated!");
   } catch (err) {
     changeUsernameError.textContent = "An error occurred. Please try again.";
@@ -283,13 +311,10 @@ deleteAccountBtn.addEventListener("click", async () => {
   const confirmed = confirm(
     "Are you sure? This will permanently delete your account."
   );
-
   if (!confirmed) return;
 
   try {
-    const res = await fetch(`/api/v1/${currentUser.id}`, {
-      method: "DELETE",
-    });
+    const res = await fetch(`/api/v1/${currentUser.id}`, { method: "DELETE" });
 
     if (!res.ok) {
       const data = await res.json();
@@ -298,11 +323,10 @@ deleteAccountBtn.addEventListener("click", async () => {
     }
 
     alert("Your account has been deleted.");
-
     setCurrentUser(null);
+    currentGroup = null;
     showLoggedOutUI();
   } catch (err) {
-    console.error("Delete error:", err);
     alert("An error occurred while trying to delete your account.");
   }
 });
