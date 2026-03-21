@@ -24,3 +24,7 @@ https://trello.com/invite/b/6968cf57caf94a8ed5e0cae4/ATTIbd146646495db0cd88fadce
 ## API Testing
 
 The API test export is located in the `documentation` folder. The API was tested in Bruno.
+
+## Web service
+
+https://notif-v2.onrender.com
