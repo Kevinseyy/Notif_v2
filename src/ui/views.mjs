@@ -1,9 +1,8 @@
 import {
   homeView,
   groupView,
-  groupTitle,
-  groupInfo,
   groupsList,
+  memberList,
   activeGroupView,
   activeGroupTitle,
   logoutBtn,

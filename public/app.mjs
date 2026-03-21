@@ -279,6 +279,8 @@ logoutBtn.addEventListener("click", () => {
   setCurrentUser(null);
   currentGroup = null;
   localStorage.removeItem("currentUser");
+  document.getElementById("groupsList").innerHTML =
+    '<p class="muted">List of the groups you are apart of</p>';
   showLoggedOutUI();
 });
 

@@ -5,8 +5,6 @@ export const createGroupBtn = $("createGroupBtn");
 export const groupsList = $("groupsList");
 
 export const groupView = $("groupView");
-export const groupTitle = $("groupTitle");
-export const groupInfo = $("groupInfo");
 export const memberList = $("memberList");
 export const freeNowBtn = $("freeNowBtn");
 
