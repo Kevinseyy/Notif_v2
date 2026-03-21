@@ -1,8 +1,6 @@
 import { memberList } from "../utils/dom.mjs";
 
 export function renderMember(name, status) {
-  memberList.innerHTML = "";
-
   const el = document.createElement("div");
   el.className = "member";
 
