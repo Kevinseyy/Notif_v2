@@ -13,13 +13,15 @@ import {
   accountView,
 } from "../utils/dom.mjs";
 
+import { getMembers } from "../api/groupApi.mjs";
+
 import { renderMember } from "./members.mjs";
 
 import { currentUser, setStatus } from "../state/appState.mjs";
 
 import { setCurrentGroup } from "../app.mjs";
 
-export function goToGroupView(group) {
+export async function goToGroupView(group) {
   homeView.style.display = "none";
   groupView.style.display = "none";
   accountView.style.display = "none";
@@ -28,9 +30,18 @@ export function goToGroupView(group) {
   activeGroupTitle.textContent = group.name;
 
   setCurrentGroup(group);
-
   setStatus("BUSY");
-  renderMember(currentUser.displayName, "BUSY");
+
+  memberList.innerHTML = "";
+
+  try {
+    const members = await getMembers(group.id);
+    members.forEach((member) => {
+      renderMember(member.username, "BUSY");
+    });
+  } catch (err) {
+    console.error("Could not load members:", err);
+  }
 }
 
 export function addGroupTab(group) {
@@ -42,7 +53,7 @@ export function addGroupTab(group) {
       <span>${group.memberCount} member</span>
     `;
 
-  tab.addEventListener("click", () => goToGroupView(group));
+  tab.addEventListener("click", async () => await goToGroupView(group));
 
   groupsList.prepend(tab);
 }

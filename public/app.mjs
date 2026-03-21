@@ -98,7 +98,7 @@ submitCreateGroupBtn.addEventListener("click", async () => {
     addGroupTab(group);
     closeCreateGroupModal();
     currentGroup = group;
-    goToGroupView(group);
+    await goToGroupView(group);
   } catch (err) {
     setError(err.message);
   }
@@ -136,7 +136,7 @@ document.getElementById("submitJoinBtn").addEventListener("click", async () => {
     document.getElementById("joinGroupModal").close();
     document.getElementById("joinCodeInput").value = "";
     currentGroup = group;
-    goToGroupView(group);
+    await goToGroupView(group);
   } catch (err) {
     error.textContent = err.message;
   }

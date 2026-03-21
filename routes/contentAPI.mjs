@@ -43,6 +43,22 @@ contentRouter.post(
   }
 );
 
+contentRouter.get("/groups/:id/members", async (req, res) => {
+  const { id } = req.params;
+
+  try {
+    const result = await pool.query(
+      `SELECT users.id, users.username FROM users
+       JOIN user_groups ON users.id = user_groups.user_id
+       WHERE user_groups.group_id = $1`,
+      [id]
+    );
+    res.json(result.rows);
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
 contentRouter.post("/groups/join", async (req, res) => {
   const { joinCode, userId } = req.body;
 

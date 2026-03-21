@@ -19,6 +19,12 @@ export async function getGroups(userId) {
   return res.json();
 }
 
+export async function getMembers(groupId) {
+  const res = await fetch(`/api/v1/groups/${groupId}/members`);
+  if (!res.ok) throw new Error("Could not load members");
+  return res.json();
+}
+
 export async function updateStatus(status) {
   const res = await fetch("/api/v1/status", {
     method: "PUT",
