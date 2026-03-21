@@ -20,6 +20,7 @@ contentRouter.post(
     },
   }),
   async (req, res) => {
+    const { userId } = req.body;
     const name = req.body.name.trim();
     const joinCode = generateCode();
 
@@ -28,7 +29,14 @@ contentRouter.post(
         "INSERT INTO groups (name, join_code) VALUES ($1, $2) RETURNING *",
         [name, joinCode]
       );
-      res.status(201).json(result.rows[0]);
+      const group = result.rows[0];
+
+      await pool.query(
+        "INSERT INTO user_groups (user_id, group_id) VALUES ($1, $2)",
+        [userId, group.id]
+      );
+
+      res.status(201).json(group);
     } catch (err) {
       res.status(500).json({ error: err.message });
     }
@@ -36,7 +44,7 @@ contentRouter.post(
 );
 
 contentRouter.post("/groups/join", async (req, res) => {
-  const { joinCode } = req.body;
+  const { joinCode, userId } = req.body;
 
   try {
     const result = await pool.query(
@@ -48,16 +56,49 @@ contentRouter.post("/groups/join", async (req, res) => {
       return res.status(404).json({ error: "Invalid code" });
     }
 
-    res.json(result.rows[0]);
+    const group = result.rows[0];
+
+    await pool.query(
+      "INSERT INTO user_groups (user_id, group_id) VALUES ($1, $2) ON CONFLICT DO NOTHING",
+      [userId, group.id]
+    );
+
+    res.json(group);
   } catch (err) {
     res.status(500).json({ error: err.message });
   }
 });
 
 contentRouter.get("/groups", async (req, res) => {
+  const { userId } = req.query;
+
   try {
-    const result = await pool.query("SELECT * FROM groups");
+    const result = await pool.query(
+      `SELECT groups.* FROM groups
+       JOIN user_groups ON groups.id = user_groups.group_id
+       WHERE user_groups.user_id = $1`,
+      [userId]
+    );
     res.json(result.rows);
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
+contentRouter.delete("/groups/:id", async (req, res) => {
+  const { id } = req.params;
+
+  try {
+    const result = await pool.query(
+      "DELETE FROM groups WHERE id = $1 RETURNING *",
+      [id]
+    );
+
+    if (result.rows.length === 0) {
+      return res.status(404).json({ error: "Group not found" });
+    }
+
+    res.json({ message: "Group deleted" });
   } catch (err) {
     res.status(500).json({ error: err.message });
   }

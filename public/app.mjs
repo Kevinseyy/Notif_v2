@@ -3,6 +3,7 @@ import {
   getGroups,
   updateStatus,
   joinGroup,
+  deleteGroup,
 } from "/api/groupApi.mjs";
 import { currentUser, setStatus, setCurrentUser } from "/state/appState.mjs";
 
@@ -30,6 +31,7 @@ import {
   registerBtn,
   loginModal,
   registerModal,
+  createGroupModal,
   closeLoginModalBtn,
   closeRegisterModalBtn,
   submitRegisterBtn,
@@ -59,10 +61,27 @@ import {
   changeUsernameInput,
   changeUsernameError,
   deleteAccountBtn,
-  createGroupModal,
 } from "/utils/dom.mjs";
 
 let currentGroup = null;
+
+const savedUser = localStorage.getItem("currentUser");
+if (savedUser) {
+  const user = JSON.parse(savedUser);
+  setCurrentUser(user);
+
+  homeView.style.display = "none";
+  groupView.style.display = "flex";
+  showLoggedInUI();
+  renderMember(user.displayName, user.status);
+
+  try {
+    const groups = await getGroups(user.id);
+    groups.forEach((group) => addGroupTab(group));
+  } catch (err) {
+    console.error("Error loading groups:", err);
+  }
+}
 
 createGroupBtn.addEventListener("click", openCreateGroupModal);
 
@@ -75,7 +94,7 @@ submitCreateGroupBtn.addEventListener("click", async () => {
   }
 
   try {
-    const group = await createGroup(name);
+    const group = await createGroup(name, currentUser.id);
     addGroupTab(group);
     closeCreateGroupModal();
     currentGroup = group;
@@ -84,6 +103,10 @@ submitCreateGroupBtn.addEventListener("click", async () => {
     setError(err.message);
   }
 });
+
+export function setCurrentGroup(group) {
+  currentGroup = group;
+}
 
 document.getElementById("joinBtn").addEventListener("click", () => {
   document.getElementById("joinGroupModal").showModal();
@@ -108,7 +131,7 @@ document.getElementById("submitJoinBtn").addEventListener("click", async () => {
   }
 
   try {
-    const group = await joinGroup(code);
+    const group = await joinGroup(code, currentUser.id);
     addGroupTab(group);
     document.getElementById("joinGroupModal").close();
     document.getElementById("joinCodeInput").value = "";
@@ -138,6 +161,35 @@ document.getElementById("copyCodeBtn").addEventListener("click", () => {
     document.getElementById("copyCodeBtn").textContent = "Copy Code";
   }, 2000);
 });
+
+document
+  .getElementById("deleteGroupBtn")
+  .addEventListener("click", async () => {
+    const confirmed = confirm(
+      `Are you sure you want to delete "${currentGroup.name}"?`
+    );
+    if (!confirmed) return;
+
+    try {
+      await deleteGroup(currentGroup.id);
+      currentGroup = null;
+
+      // Remove the group tab from the dashboard
+      document.querySelectorAll(".group-tab").forEach((tab) => {
+        if (tab.dataset.groupId == currentGroup?.id) tab.remove();
+      });
+
+      goBackToDashboard();
+
+      // Reload group tabs
+      document.getElementById("groupsList").innerHTML =
+        '<p class="muted">List of the groups you are apart of</p>';
+      const groups = await getGroups(currentUser.id);
+      groups.forEach((group) => addGroupTab(group));
+    } catch (err) {
+      alert(err.message);
+    }
+  });
 
 freeNowBtn.addEventListener("click", async () => {
   const newStatus = currentUser.status === "FREE" ? "BUSY" : "FREE";
@@ -199,10 +251,16 @@ submitLoginBtn.addEventListener("click", async () => {
     return;
   }
 
-  setCurrentUser({ id: data.userId, username: data.username });
+  const user = {
+    id: data.userId,
+    username: data.username,
+    displayName: data.username,
+  };
+  setCurrentUser(user);
+  localStorage.setItem("currentUser", JSON.stringify(user));
 
   try {
-    const groups = await getGroups();
+    const groups = await getGroups(user.id);
     groups.forEach((group) => addGroupTab(group));
   } catch (err) {
     console.error("Error loading groups:", err);
@@ -210,8 +268,8 @@ submitLoginBtn.addEventListener("click", async () => {
 
   loginModal.close();
 
-  document.getElementById("homeView").style.display = "none";
-  document.getElementById("groupView").style.display = "flex";
+  homeView.style.display = "none";
+  groupView.style.display = "flex";
 
   showLoggedInUI();
   renderMember(currentUser.displayName, currentUser.status);
@@ -220,6 +278,7 @@ submitLoginBtn.addEventListener("click", async () => {
 logoutBtn.addEventListener("click", () => {
   setCurrentUser(null);
   currentGroup = null;
+  localStorage.removeItem("currentUser");
   showLoggedOutUI();
 });
 
@@ -293,11 +352,14 @@ submitChangeUsernameBtn.addEventListener("click", async () => {
       return;
     }
 
-    setCurrentUser({
+    const updatedUser = {
       ...currentUser,
       username: data.username,
       displayName: data.username,
-    });
+    };
+    setCurrentUser(updatedUser);
+    localStorage.setItem("currentUser", JSON.stringify(updatedUser));
+
     accountUsername.textContent = data.username;
     changeUsernameModal.close();
     changeUsernameInput.value = "";
@@ -325,6 +387,7 @@ deleteAccountBtn.addEventListener("click", async () => {
     alert("Your account has been deleted.");
     setCurrentUser(null);
     currentGroup = null;
+    localStorage.removeItem("currentUser");
     showLoggedOutUI();
   } catch (err) {
     alert("An error occurred while trying to delete your account.");

@@ -17,6 +17,8 @@ import { renderMember } from "./members.mjs";
 
 import { currentUser, setStatus } from "../state/appState.mjs";
 
+import { setCurrentGroup } from "../app.mjs";
+
 export function goToGroupView(group) {
   homeView.style.display = "none";
   groupView.style.display = "none";
@@ -24,7 +26,8 @@ export function goToGroupView(group) {
 
   activeGroupView.style.display = "block";
   activeGroupTitle.textContent = group.name;
-  groupInfo.textContent = `Group ID: ${group.groupId} • Members: ${group.memberCount}`;
+
+  setCurrentGroup(group);
 
   setStatus("BUSY");
   renderMember(currentUser.displayName, "BUSY");

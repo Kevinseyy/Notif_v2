@@ -38,6 +38,14 @@ await pool.query(`
   )
 `);
 
+await pool.query(`
+  CREATE TABLE IF NOT EXISTS user_groups (
+    user_id UUID REFERENCES users(id) ON DELETE CASCADE,
+    group_id INT REFERENCES groups(id) ON DELETE CASCADE,
+    PRIMARY KEY (user_id, group_id)
+  )
+`);
+
 console.log("Database ready");
 
 app.listen(PORT, () => {
