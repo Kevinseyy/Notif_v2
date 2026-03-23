@@ -22,7 +22,7 @@ import {
 } from "/ui/views.mjs";
 import { renderMember } from "/ui/members.mjs";
 
-import { t, setLang } from "/utils/i18n.mjs";
+import { t, setLang, applyTranslations } from "/utils/i18n.mjs";
 
 import {
   createGroupBtn,
@@ -55,6 +55,7 @@ import {
   backFromAccountBtn,
   homeView,
   groupView,
+  activeGroupView,
   changeUsernameBtn,
   changeUsernameModal,
   closeChangeUsernameModalBtn,
@@ -71,6 +72,8 @@ import {
 
 let currentGroup = null;
 let previousView = null;
+
+applyTranslations();
 
 const savedUser = localStorage.getItem("currentUser");
 if (savedUser) {
@@ -96,7 +99,7 @@ submitCreateGroupBtn.addEventListener("click", async () => {
   const name = groupNameInput.value.trim();
 
   if (name.length < 2) {
-    setError("Group name must be at least 2 characters.");
+    setError(t("groupNameShort"));
     return;
   }
 
@@ -133,7 +136,7 @@ document.getElementById("submitJoinBtn").addEventListener("click", async () => {
   error.textContent = "";
 
   if (!code) {
-    error.textContent = "Please enter a code.";
+    error.textContent = t("enterCode");
     return;
   }
 
@@ -145,7 +148,8 @@ document.getElementById("submitJoinBtn").addEventListener("click", async () => {
     currentGroup = group;
     await goToGroupView(group);
   } catch (err) {
-    error.textContent = err.message;
+    error.textContent =
+      err.message === "Invalid code" ? t("invalidCode") : t("loginFailed");
   }
 });
 
@@ -163,36 +167,31 @@ document
 
 document.getElementById("copyCodeBtn").addEventListener("click", () => {
   navigator.clipboard.writeText(currentGroup.join_code);
-  document.getElementById("copyCodeBtn").textContent = "Copied!";
+  document.getElementById("copyCodeBtn").textContent = t("copied");
   setTimeout(() => {
-    document.getElementById("copyCodeBtn").textContent = "Copy Code";
+    document.getElementById("copyCodeBtn").textContent = t("copyCode");
   }, 2000);
 });
 
 document
   .getElementById("deleteGroupBtn")
   .addEventListener("click", async () => {
-    const confirmed = confirm(
-      `Are you sure you want to delete "${currentGroup.name}"?`
-    );
+    const confirmed = confirm(t("deleteGroupConfirm"));
     if (!confirmed) return;
 
     try {
       await deleteGroup(currentGroup.id);
       currentGroup = null;
 
-      document.querySelectorAll(".group-tab").forEach((tab) => {
-        if (tab.dataset.groupId == currentGroup?.id) tab.remove();
-      });
-
       goBackToDashboard();
 
-      document.getElementById("groupsList").innerHTML =
-        '<p class="muted">List of the groups you are apart of</p>';
+      document.getElementById("groupsList").innerHTML = `<p class="muted">${t(
+        "groupsListPlaceholder"
+      )}</p>`;
       const groups = await getGroups(currentUser.id);
       groups.forEach((group) => addGroupTab(group));
     } catch (err) {
-      alert(err.message);
+      alert(t("deleteGroupFailed"));
     }
   });
 
@@ -230,7 +229,7 @@ submitRegisterBtn.addEventListener("click", async () => {
   const password = document.getElementById("registerPassword").value.trim();
 
   if (!tosConsent.checked) {
-    alert("You must agree to the Terms of Service.");
+    alert(t("tosRequired"));
     return;
   }
 
@@ -243,7 +242,11 @@ submitRegisterBtn.addEventListener("click", async () => {
   const data = await res.json();
 
   if (!res.ok) {
-    alert(data.error || "Registration failed");
+    alert(
+      data.error === "Username already taken"
+        ? t("usernameTaken")
+        : t("registrationFailed")
+    );
     return;
   }
 
@@ -263,7 +266,13 @@ submitLoginBtn.addEventListener("click", async () => {
   const data = await res.json();
 
   if (!res.ok) {
-    alert(data.error || "Login failed");
+    alert(
+      data.error === "User not found"
+        ? t("userNotFound")
+        : data.error === "Incorrect password"
+        ? t("incorrectPassword")
+        : t("loginFailed")
+    );
     return;
   }
 
@@ -295,8 +304,9 @@ logoutBtn.addEventListener("click", () => {
   setCurrentUser(null);
   currentGroup = null;
   localStorage.removeItem("currentUser");
-  document.getElementById("groupsList").innerHTML =
-    '<p class="muted">List of the groups you are apart of</p>';
+  document.getElementById("groupsList").innerHTML = `<p class="muted">${t(
+    "groupsListPlaceholder"
+  )}</p>`;
   showLoggedOutUI();
 });
 
@@ -378,7 +388,10 @@ submitChangeUsernameBtn.addEventListener("click", async () => {
     const data = await res.json();
 
     if (!res.ok) {
-      changeUsernameError.textContent = data.error || "Update failed";
+      changeUsernameError.textContent =
+        data.error === "Username already taken"
+          ? t("usernameTaken")
+          : t("updateFailed");
       return;
     }
 
@@ -393,16 +406,14 @@ submitChangeUsernameBtn.addEventListener("click", async () => {
     accountUsername.textContent = data.username;
     changeUsernameModal.close();
     changeUsernameInput.value = "";
-    alert("Username updated!");
+    alert(t("usernameUpdated"));
   } catch (err) {
-    changeUsernameError.textContent = "An error occurred. Please try again.";
+    changeUsernameError.textContent = t("errorOccurred");
   }
 });
 
 deleteAccountBtn.addEventListener("click", async () => {
-  const confirmed = confirm(
-    "Are you sure? This will permanently delete your account."
-  );
+  const confirmed = confirm(t("deleteConfirm"));
   if (!confirmed) return;
 
   try {
@@ -410,17 +421,17 @@ deleteAccountBtn.addEventListener("click", async () => {
 
     if (!res.ok) {
       const data = await res.json();
-      alert(data.error || "Failed to delete account");
+      alert(data.error || t("deleteAccountFailed"));
       return;
     }
 
-    alert("Your account has been deleted.");
+    alert(t("accountDeleted"));
     setCurrentUser(null);
     currentGroup = null;
     localStorage.removeItem("currentUser");
     showLoggedOutUI();
   } catch (err) {
-    alert("An error occurred while trying to delete your account.");
+    alert(t("errorOccurred"));
   }
 });
 
@@ -442,6 +453,7 @@ drawerBackdrop.addEventListener("click", () => {
 document.querySelectorAll(".drawer-item[data-lang]").forEach((btn) => {
   btn.addEventListener("click", () => {
     setLang(btn.dataset.lang);
+    applyTranslations();
     langDrawer.classList.remove("open");
     drawerBackdrop.style.display = "none";
   });
