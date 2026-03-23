@@ -74,3 +74,7 @@ export const submitChangeUsernameBtn = $("submitChangeUsernameBtn");
 export const changeUsernameError = $("changeUsernameError");
 
 export const deleteAccountBtn = $("deleteAccountBtn");
+export const gearBtn = $("gearBtn");
+export const langDrawer = $("langDrawer");
+export const drawerBackdrop = $("drawerBackdrop");
+export const closeDrawerBtn = $("closeDrawerBtn");

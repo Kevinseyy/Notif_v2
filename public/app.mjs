@@ -22,6 +22,8 @@ import {
 } from "/ui/views.mjs";
 import { renderMember } from "/ui/members.mjs";
 
+import { t, setLang } from "/utils/i18n.mjs";
+
 import {
   createGroupBtn,
   submitCreateGroupBtn,
@@ -61,6 +63,10 @@ import {
   changeUsernameInput,
   changeUsernameError,
   deleteAccountBtn,
+  gearBtn,
+  langDrawer,
+  drawerBackdrop,
+  closeDrawerBtn,
 } from "/utils/dom.mjs";
 
 let currentGroup = null;
@@ -416,4 +422,27 @@ deleteAccountBtn.addEventListener("click", async () => {
   } catch (err) {
     alert("An error occurred while trying to delete your account.");
   }
+});
+
+gearBtn.addEventListener("click", () => {
+  langDrawer.classList.add("open");
+  drawerBackdrop.style.display = "block";
+});
+
+closeDrawerBtn.addEventListener("click", () => {
+  langDrawer.classList.remove("open");
+  drawerBackdrop.style.display = "none";
+});
+
+drawerBackdrop.addEventListener("click", () => {
+  langDrawer.classList.remove("open");
+  drawerBackdrop.style.display = "none";
+});
+
+document.querySelectorAll(".drawer-item[data-lang]").forEach((btn) => {
+  btn.addEventListener("click", () => {
+    setLang(btn.dataset.lang);
+    langDrawer.classList.remove("open");
+    drawerBackdrop.style.display = "none";
+  });
 });
