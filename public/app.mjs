@@ -70,6 +70,20 @@ import {
   closeDrawerBtn,
 } from "/utils/dom.mjs";
 
+const offlineScreen = document.getElementById("offlineScreen");
+
+function updateOnlineStatus() {
+  if (!navigator.onLine) {
+    offlineScreen.style.display = "flex";
+  } else {
+    offlineScreen.style.display = "none";
+  }
+}
+
+window.addEventListener("online", updateOnlineStatus);
+window.addEventListener("offline", updateOnlineStatus);
+updateOnlineStatus();
+
 let currentGroup = null;
 let previousView = null;
 
