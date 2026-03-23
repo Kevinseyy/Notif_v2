@@ -48,9 +48,8 @@ export function addGroupTab(group) {
   tab.className = "group-tab";
 
   tab.innerHTML = `
-      <strong>${group.name}</strong>
-      <span>${group.memberCount} member</span>
-    `;
+    <strong>${group.name}</strong>
+  `;
 
   tab.addEventListener("click", async () => await goToGroupView(group));
 

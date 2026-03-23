@@ -64,6 +64,7 @@ import {
 } from "/utils/dom.mjs";
 
 let currentGroup = null;
+let previousView = null;
 
 const savedUser = localStorage.getItem("currentUser");
 if (savedUser) {
@@ -324,7 +325,14 @@ backToDashboardBtn.addEventListener("click", () => {
 });
 
 editAccountBtn.addEventListener("click", () => {
+  if (activeGroupView.style.display !== "none") {
+    previousView = "activeGroup";
+  } else {
+    previousView = "group";
+  }
+
   homeView.style.display = "none";
+  activeGroupView.style.display = "none";
   groupView.style.display = "none";
   accountView.style.display = "flex";
   accountUsername.textContent = currentUser.displayName;
@@ -332,7 +340,12 @@ editAccountBtn.addEventListener("click", () => {
 
 backFromAccountBtn.addEventListener("click", () => {
   accountView.style.display = "none";
-  groupView.style.display = "flex";
+  if (previousView === "activeGroup") {
+    activeGroupView.style.display = "block";
+  } else {
+    groupView.style.display = "flex";
+  }
+  previousView = null;
 });
 
 changeUsernameBtn.addEventListener("click", () =>
