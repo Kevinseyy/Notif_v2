@@ -174,14 +174,12 @@ document
       await deleteGroup(currentGroup.id);
       currentGroup = null;
 
-      // Remove the group tab from the dashboard
       document.querySelectorAll(".group-tab").forEach((tab) => {
         if (tab.dataset.groupId == currentGroup?.id) tab.remove();
       });
 
       goBackToDashboard();
 
-      // Reload group tabs
       document.getElementById("groupsList").innerHTML =
         '<p class="muted">List of the groups you are apart of</p>';
       const groups = await getGroups(currentUser.id);
@@ -195,7 +193,18 @@ freeNowBtn.addEventListener("click", async () => {
   const newStatus = currentUser.status === "FREE" ? "BUSY" : "FREE";
   const data = await updateStatus(newStatus);
   setStatus(data.status);
-  renderMember(currentUser.displayName, data.status);
+
+  const memberEls = document.querySelectorAll(".member");
+  memberEls.forEach((el) => {
+    const nameEl = el.querySelector(".member-name");
+    if (nameEl && nameEl.textContent === currentUser.displayName) {
+      const dot = el.querySelector(".status-dot");
+      dot.className = `status-dot ${data.status === "FREE" ? "green" : "red"}`;
+      if (data.status === "FREE") {
+        dot.classList.add("jump");
+      }
+    }
+  });
 });
 
 loginBtn.addEventListener("click", () => loginModal.showModal());
