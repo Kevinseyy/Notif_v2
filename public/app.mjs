@@ -70,6 +70,10 @@ import {
   closeDrawerBtn,
 } from "/utils/dom.mjs";
 
+if ("serviceWorker" in navigator) {
+  navigator.serviceWorker.register("/service-worker.js");
+}
+
 const offlineScreen = document.getElementById("offlineScreen");
 
 function updateOnlineStatus() {
