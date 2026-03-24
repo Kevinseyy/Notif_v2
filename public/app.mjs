@@ -4,6 +4,7 @@ import {
   updateStatus,
   joinGroup,
   deleteGroup,
+  subscribeUser,
 } from "/api/groupApi.mjs";
 import { currentUser, setStatus, setCurrentUser } from "/state/appState.mjs";
 
@@ -69,6 +70,22 @@ import {
   drawerBackdrop,
   closeDrawerBtn,
 } from "/utils/dom.mjs";
+
+async function registerPushSubscription(userId) {
+  if (!("PushManager" in window)) return;
+
+  const permission = await Notification.requestPermission();
+  if (permission !== "granted") return;
+
+  const registration = await navigator.serviceWorker.ready;
+  const subscription = await registration.pushManager.subscribe({
+    userVisibleOnly: true,
+    applicationServerKey:
+      "BI7H6PbtZQXmjPjDMjxtMQj_0Q3L09N3rF4grmedWP3UCNC6L2CFY4HUPQ0MoilRLi3eJcX1ZWO_g-1kKpqpFn4",
+  });
+
+  await subscribeUser(userId, subscription);
+}
 
 if ("serviceWorker" in navigator) {
   navigator.serviceWorker.register("/service-worker.js");
