@@ -46,6 +46,15 @@ await pool.query(`
   )
 `);
 
+await pool.query(`
+  CREATE TABLE IF NOT EXISTS subscriptions (
+    id SERIAL PRIMARY KEY,
+    user_id UUID REFERENCES users(id) ON DELETE CASCADE,
+    subscription JSONB NOT NULL,
+    created_at TIMESTAMP DEFAULT NOW()
+  )
+`);
+
 console.log("Database ready");
 
 app.listen(PORT, () => {

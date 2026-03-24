@@ -97,6 +97,7 @@ const savedUser = localStorage.getItem("currentUser");
 if (savedUser) {
   const user = JSON.parse(savedUser);
   setCurrentUser(user);
+  await registerPushSubscription(user.id);
 
   homeView.style.display = "none";
   groupView.style.display = "flex";
@@ -215,7 +216,7 @@ document
 
 freeNowBtn.addEventListener("click", async () => {
   const newStatus = currentUser.status === "FREE" ? "BUSY" : "FREE";
-  const data = await updateStatus(newStatus);
+  const data = await updateStatus(currentGroup.id, currentUser.id, newStatus);
   setStatus(data.status);
 
   const memberEls = document.querySelectorAll(".member");
@@ -301,6 +302,8 @@ submitLoginBtn.addEventListener("click", async () => {
   };
   setCurrentUser(user);
   localStorage.setItem("currentUser", JSON.stringify(user));
+
+  await registerPushSubscription(user.id);
 
   try {
     const groups = await getGroups(user.id);

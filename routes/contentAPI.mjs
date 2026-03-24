@@ -119,3 +119,50 @@ contentRouter.delete("/groups/:id", async (req, res) => {
     res.status(500).json({ error: err.message });
   }
 });
+
+import webpush from "web-push";
+
+webpush.setVapidDetails(
+  process.env.VAPID_EMAIL,
+  process.env.VAPID_PUBLIC_KEY,
+  process.env.VAPID_PRIVATE_KEY
+);
+
+contentRouter.put("/groups/:id/status", async (req, res) => {
+  const { userId, status } = req.body;
+  const { id: groupId } = req.params;
+
+  try {
+    const result = await pool.query(
+      `SELECT users.username, subscriptions.subscription 
+       FROM subscriptions
+       JOIN users ON subscriptions.user_id = users.id
+       JOIN user_groups ON users.id = user_groups.user_id
+       WHERE user_groups.group_id = $1 AND users.id != $2`,
+      [groupId, userId]
+    );
+
+    const senderResult = await pool.query(
+      "SELECT username FROM users WHERE id = $1",
+      [userId]
+    );
+    const senderName = senderResult.rows[0].username;
+
+    const notifications = result.rows.map((row) => {
+      const payload = JSON.stringify({
+        title: "NOTIF",
+        body: `${senderName} is free now!`,
+      });
+
+      return webpush
+        .sendNotification(row.subscription, payload)
+        .catch((err) => console.error("Push failed:", err));
+    });
+
+    await Promise.all(notifications);
+
+    res.json({ status });
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});

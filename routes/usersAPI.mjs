@@ -126,3 +126,19 @@ usersRouter.delete("/:id", async (req, res) => {
     res.status(500).json({ error: err.message });
   }
 });
+
+usersRouter.post("/subscribe", async (req, res) => {
+  const { userId, subscription } = req.body;
+
+  try {
+    await pool.query(
+      `INSERT INTO subscriptions (user_id, subscription)
+       VALUES ($1, $2)
+       ON CONFLICT DO NOTHING`,
+      [userId, JSON.stringify(subscription)]
+    );
+    res.json({ message: "Subscribed" });
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
