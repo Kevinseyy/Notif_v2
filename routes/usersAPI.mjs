@@ -121,10 +121,9 @@ usersRouter.post("/subscribe", async (req, res) => {
   const { userId, subscription } = req.body;
 
   try {
+    await pool.query("DELETE FROM subscriptions WHERE user_id = $1", [userId]);
     await pool.query(
-      `INSERT INTO subscriptions (user_id, subscription)
-       VALUES ($1, $2)
-       ON CONFLICT DO NOTHING`,
+      "INSERT INTO subscriptions (user_id, subscription) VALUES ($1, $2)",
       [userId, JSON.stringify(subscription)]
     );
     res.json({ message: "Subscribed" });

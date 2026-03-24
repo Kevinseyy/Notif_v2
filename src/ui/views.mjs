@@ -44,15 +44,15 @@ export async function goToGroupView(group) {
 }
 
 export function addGroupTab(group) {
+  const existing = document.querySelector(`[data-group-id="${group.id}"]`);
+  if (existing) return;
+
   const tab = document.createElement("div");
   tab.className = "group-tab";
+  tab.dataset.groupId = group.id;
 
-  tab.innerHTML = `
-    <strong>${group.name}</strong>
-  `;
-
+  tab.innerHTML = `<strong>${group.name}</strong>`;
   tab.addEventListener("click", async () => await goToGroupView(group));
-
   groupsList.prepend(tab);
 }
 
