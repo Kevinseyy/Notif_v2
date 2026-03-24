@@ -98,16 +98,6 @@ usersRouter.put("/username", async (req, res) => {
   }
 });
 
-usersRouter.put("/status", (req, res) => {
-  const { status } = req.body;
-
-  if (!status) {
-    return res.status(400).json({ error: "Status is required" });
-  }
-
-  res.json({ status });
-});
-
 usersRouter.delete("/:id", async (req, res) => {
   const { id } = req.params;
 

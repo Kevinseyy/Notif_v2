@@ -1,6 +1,13 @@
 import express from "express";
 import { validateBody } from "../middleware/validateBody.mjs";
 import pool from "../database/database.mjs";
+import webpush from "web-push";
+
+webpush.setVapidDetails(
+  process.env.VAPID_EMAIL,
+  process.env.VAPID_PUBLIC_KEY,
+  process.env.VAPID_PRIVATE_KEY
+);
 
 export const contentRouter = express.Router();
 
@@ -119,14 +126,6 @@ contentRouter.delete("/groups/:id", async (req, res) => {
     res.status(500).json({ error: err.message });
   }
 });
-
-import webpush from "web-push";
-
-webpush.setVapidDetails(
-  process.env.VAPID_EMAIL,
-  process.env.VAPID_PUBLIC_KEY,
-  process.env.VAPID_PRIVATE_KEY
-);
 
 contentRouter.put("/groups/:id/status", async (req, res) => {
   const { userId, status } = req.body;
