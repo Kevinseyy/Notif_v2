@@ -332,9 +332,9 @@ submitLoginBtn.addEventListener("click", async () => {
   loginModal.close();
   homeView.style.display = "none";
   groupView.style.display = "flex";
+  hideLoader();
   showLoggedInUI();
   renderMember(currentUser.displayName);
-  hideLoader();
 });
 
 logoutBtn.addEventListener("click", () => {
