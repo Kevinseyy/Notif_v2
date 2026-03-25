@@ -78,3 +78,14 @@ export const gearBtn = $("gearBtn");
 export const langDrawer = $("langDrawer");
 export const drawerBackdrop = $("drawerBackdrop");
 export const closeDrawerBtn = $("closeDrawerBtn");
+
+export const howItWorksBtn = $("howItWorksBtn");
+export const howItWorksModal = $("howItWorksModal");
+export const closeHowItWorksModalBtn = $("closeHowItWorksModalBtn");
+
+export const deleteGroupBtn = $("deleteGroupBtn");
+export const offlineScreen = $("offlineScreen");
+export const registerUsername = $("registerUsername");
+export const registerPassword = $("registerPassword");
+export const loginUsername = $("loginUsername");
+export const loginPassword = $("loginPassword");

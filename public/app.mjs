@@ -12,6 +12,7 @@ import {
   openCreateGroupModal,
   closeCreateGroupModal,
   setError,
+  initModals,
 } from "/ui/modals.mjs";
 
 import {
@@ -34,20 +35,9 @@ import {
   registerBtn,
   loginModal,
   registerModal,
-  createGroupModal,
-  closeLoginModalBtn,
-  closeRegisterModalBtn,
   submitRegisterBtn,
   submitLoginBtn,
   tosConsent,
-  viewTosLink,
-  viewPrivacyLink,
-  tosModal,
-  privacyModal,
-  closeTosModalBtn,
-  closePrivacyModalBtn,
-  cancelCreateGroupBtn,
-  closeCreateGroupModalBtn,
   backToDashboardBtn,
   logoutBtn,
   editAccountBtn,
@@ -59,8 +49,6 @@ import {
   activeGroupView,
   changeUsernameBtn,
   changeUsernameModal,
-  closeChangeUsernameModalBtn,
-  cancelChangeUsernameBtn,
   submitChangeUsernameBtn,
   changeUsernameInput,
   changeUsernameError,
@@ -69,6 +57,22 @@ import {
   langDrawer,
   drawerBackdrop,
   closeDrawerBtn,
+  joinBtn,
+  joinGroupModal,
+  submitJoinBtn,
+  joinCodeInput,
+  joinGroupError,
+  codeBtn,
+  groupCodeModal,
+  groupCodeDisplay,
+  copyCodeBtn,
+  deleteGroupBtn,
+  groupsList,
+  registerUsername,
+  registerPassword,
+  loginUsername,
+  loginPassword,
+  offlineScreen,
 } from "/utils/dom.mjs";
 
 async function registerPushSubscription(userId) {
@@ -91,8 +95,6 @@ if ("serviceWorker" in navigator) {
   navigator.serviceWorker.register("/service-worker.js");
 }
 
-const offlineScreen = document.getElementById("offlineScreen");
-
 function updateOnlineStatus() {
   if (!navigator.onLine) {
     offlineScreen.style.display = "flex";
@@ -109,6 +111,7 @@ let currentGroup = null;
 let previousView = null;
 
 applyTranslations();
+initModals();
 
 const savedFreeUntil = localStorage.getItem("freeUntil");
 if (savedFreeUntil) {
@@ -159,82 +162,58 @@ export function setCurrentGroup(group) {
   currentGroup = group;
 }
 
-document.getElementById("joinBtn").addEventListener("click", () => {
-  document.getElementById("joinGroupModal").showModal();
-});
+joinBtn.addEventListener("click", () => joinGroupModal.showModal());
 
-document.getElementById("closeJoinModalBtn").addEventListener("click", () => {
-  document.getElementById("joinGroupModal").close();
-});
-
-document.getElementById("cancelJoinBtn").addEventListener("click", () => {
-  document.getElementById("joinGroupModal").close();
-});
-
-document.getElementById("submitJoinBtn").addEventListener("click", async () => {
-  const code = document.getElementById("joinCodeInput").value.trim();
-  const error = document.getElementById("joinGroupError");
-  error.textContent = "";
+submitJoinBtn.addEventListener("click", async () => {
+  const code = joinCodeInput.value.trim();
+  joinGroupError.textContent = "";
 
   if (!code) {
-    error.textContent = t("enterCode");
+    joinGroupError.textContent = t("enterCode");
     return;
   }
 
   try {
     const group = await joinGroup(code, currentUser.id);
     addGroupTab(group);
-    document.getElementById("joinGroupModal").close();
-    document.getElementById("joinCodeInput").value = "";
+    joinGroupModal.close();
+    joinCodeInput.value = "";
     currentGroup = group;
     await goToGroupView(group);
   } catch (err) {
-    error.textContent =
+    joinGroupError.textContent =
       err.message === "Invalid code" ? t("invalidCode") : t("loginFailed");
   }
 });
 
-document.getElementById("codeBtn").addEventListener("click", () => {
-  document.getElementById("groupCodeDisplay").textContent =
-    currentGroup.join_code;
-  document.getElementById("groupCodeModal").showModal();
+codeBtn.addEventListener("click", () => {
+  groupCodeDisplay.textContent = currentGroup.join_code;
+  groupCodeModal.showModal();
 });
 
-document
-  .getElementById("closeGroupCodeModalBtn")
-  .addEventListener("click", () => {
-    document.getElementById("groupCodeModal").close();
-  });
-
-document.getElementById("copyCodeBtn").addEventListener("click", () => {
+copyCodeBtn.addEventListener("click", () => {
   navigator.clipboard.writeText(currentGroup.join_code);
-  document.getElementById("copyCodeBtn").textContent = t("copied");
+  copyCodeBtn.textContent = t("copied");
   setTimeout(() => {
-    document.getElementById("copyCodeBtn").textContent = t("copyCode");
+    copyCodeBtn.textContent = t("copyCode");
   }, 2000);
 });
 
-document
-  .getElementById("deleteGroupBtn")
-  .addEventListener("click", async () => {
-    const confirmed = confirm(t("deleteGroupConfirm"));
-    if (!confirmed) return;
+deleteGroupBtn.addEventListener("click", async () => {
+  const confirmed = confirm(t("deleteGroupConfirm"));
+  if (!confirmed) return;
 
-    try {
-      await deleteGroup(currentGroup.id);
-      currentGroup = null;
-
-      goBackToDashboard();
-
-      document.getElementById("groupsList").innerHTML = `<p class="muted">${t(
-        "groupsListPlaceholder"
-      )}</p>`;
-      const groups = await getGroups(currentUser.id);
-      groups.forEach((group) => addGroupTab(group));
-    } catch (err) {
-      alert(t("deleteGroupFailed"));
-    }
-  });
+  try {
+    await deleteGroup(currentGroup.id);
+    currentGroup = null;
+    goBackToDashboard();
+    groupsList.innerHTML = `<p class="muted">${t("groupsListPlaceholder")}</p>`;
+    const groups = await getGroups(currentUser.id);
+    groups.forEach((group) => addGroupTab(group));
+  } catch (err) {
+    alert(t("deleteGroupFailed"));
+  }
+});
 
 function setFreeButton(freeUntil) {
   const remaining = freeUntil - Date.now();
@@ -259,7 +238,7 @@ freeNowBtn.addEventListener("click", async () => {
 
   const data = await updateStatus(currentGroup.id, currentUser.id, "FREE");
 
-  const freeUntil = Date.now() + 10 * 1000;
+  const freeUntil = Date.now() + 10 * 60 * 1000;
   localStorage.setItem("freeUntil", freeUntil);
 
   setFreeButton(freeUntil);
@@ -269,16 +248,9 @@ loginBtn.addEventListener("click", () => loginModal.showModal());
 registerBtn.addEventListener("click", () => registerModal.showModal());
 getStartedBtn.addEventListener("click", () => registerModal.showModal());
 
-closeLoginModalBtn.addEventListener("click", () => loginModal.close());
-closeRegisterModalBtn.addEventListener("click", () => registerModal.close());
-cancelCreateGroupBtn.addEventListener("click", () => createGroupModal.close());
-closeCreateGroupModalBtn.addEventListener("click", () =>
-  createGroupModal.close()
-);
-
 submitRegisterBtn.addEventListener("click", async () => {
-  const username = document.getElementById("registerUsername").value.trim();
-  const password = document.getElementById("registerPassword").value.trim();
+  const username = registerUsername.value.trim();
+  const password = registerPassword.value.trim();
 
   if (!tosConsent.checked) {
     alert(t("tosRequired"));
@@ -306,8 +278,8 @@ submitRegisterBtn.addEventListener("click", async () => {
 });
 
 submitLoginBtn.addEventListener("click", async () => {
-  const username = document.getElementById("loginUsername").value.trim();
-  const password = document.getElementById("loginPassword").value.trim();
+  const username = loginUsername.value.trim();
+  const password = loginPassword.value.trim();
 
   const res = await fetch("/api/v1/login", {
     method: "POST",
@@ -346,10 +318,8 @@ submitLoginBtn.addEventListener("click", async () => {
   }
 
   loginModal.close();
-
   homeView.style.display = "none";
   groupView.style.display = "flex";
-
   showLoggedInUI();
   renderMember(currentUser.displayName);
 });
@@ -358,35 +328,8 @@ logoutBtn.addEventListener("click", () => {
   setCurrentUser(null);
   currentGroup = null;
   localStorage.removeItem("currentUser");
-  document.getElementById("groupsList").innerHTML = `<p class="muted">${t(
-    "groupsListPlaceholder"
-  )}</p>`;
+  groupsList.innerHTML = `<p class="muted">${t("groupsListPlaceholder")}</p>`;
   showLoggedOutUI();
-});
-
-[loginModal, registerModal].forEach((modal) => {
-  modal.addEventListener("click", (e) => {
-    if (e.target === modal) modal.close();
-  });
-});
-
-viewTosLink.addEventListener("click", (e) => {
-  e.preventDefault();
-  tosModal.showModal();
-});
-
-viewPrivacyLink.addEventListener("click", (e) => {
-  e.preventDefault();
-  privacyModal.showModal();
-});
-
-closeTosModalBtn.addEventListener("click", () => tosModal.close());
-closePrivacyModalBtn.addEventListener("click", () => privacyModal.close());
-
-[tosModal, privacyModal].forEach((modal) => {
-  modal.addEventListener("click", (e) => {
-    if (e.target === modal) modal.close();
-  });
 });
 
 backToDashboardBtn.addEventListener("click", () => {
@@ -420,12 +363,6 @@ backFromAccountBtn.addEventListener("click", () => {
 
 changeUsernameBtn.addEventListener("click", () =>
   changeUsernameModal.showModal()
-);
-closeChangeUsernameModalBtn.addEventListener("click", () =>
-  changeUsernameModal.close()
-);
-cancelChangeUsernameBtn.addEventListener("click", () =>
-  changeUsernameModal.close()
 );
 
 submitChangeUsernameBtn.addEventListener("click", async () => {
