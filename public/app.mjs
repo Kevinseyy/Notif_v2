@@ -77,19 +77,23 @@ import {
 } from "/utils/dom.mjs";
 
 async function registerPushSubscription(userId) {
-  if (!("PushManager" in window)) return;
+  try {
+    if (!("PushManager" in window)) return;
 
-  const permission = await Notification.requestPermission();
-  if (permission !== "granted") return;
+    const permission = await Notification.requestPermission();
+    if (permission !== "granted") return;
 
-  const registration = await navigator.serviceWorker.ready;
-  const subscription = await registration.pushManager.subscribe({
-    userVisibleOnly: true,
-    applicationServerKey:
-      "BI7H6PbtZQXmjPjDMjxtMQj_0Q3L09N3rF4grmedWP3UCNC6L2CFY4HUPQ0MoilRLi3eJcX1ZWO_g-1kKpqpFn4",
-  });
+    const registration = await navigator.serviceWorker.ready;
+    const subscription = await registration.pushManager.subscribe({
+      userVisibleOnly: true,
+      applicationServerKey:
+        "BI7H6PbtZQXmjPjDMjxtMQj_0Q3L09N3rF4grmedWP3UCNC6L2CFY4HUPQ0MoilRLi3eJcX1ZWO_g-1kKpqpFn4",
+    });
 
-  await subscribeUser(userId, subscription);
+    await subscribeUser(userId, subscription);
+  } catch (err) {
+    console.error("Push subscription failed:", err);
+  }
 }
 
 if ("serviceWorker" in navigator) {
