@@ -96,6 +96,14 @@ async function registerPushSubscription(userId) {
   }
 }
 
+function showLoader() {
+  loaderScreen.style.display = "flex";
+}
+
+function hideLoader() {
+  loaderScreen.style.display = "none";
+}
+
 if ("serviceWorker" in navigator) {
   navigator.serviceWorker.register("/service-worker.js");
 }
@@ -147,7 +155,6 @@ if (savedUser) {
 createGroupBtn.addEventListener("click", openCreateGroupModal);
 
 submitCreateGroupBtn.addEventListener("click", async () => {
-  showLoader();
   const name = groupNameInput.value.trim();
 
   if (name.length < 2) {
@@ -155,6 +162,7 @@ submitCreateGroupBtn.addEventListener("click", async () => {
     return;
   }
 
+  showLoader();
   try {
     const group = await createGroup(name, currentUser.id);
     addGroupTab(group);
@@ -174,7 +182,6 @@ export function setCurrentGroup(group) {
 joinBtn.addEventListener("click", () => joinGroupModal.showModal());
 
 submitJoinBtn.addEventListener("click", async () => {
-  showLoader();
   const code = joinCodeInput.value.trim();
   joinGroupError.textContent = "";
 
@@ -183,6 +190,7 @@ submitJoinBtn.addEventListener("click", async () => {
     return;
   }
 
+  showLoader();
   try {
     const group = await joinGroup(code, currentUser.id);
     addGroupTab(group);
@@ -289,7 +297,6 @@ submitRegisterBtn.addEventListener("click", async () => {
 });
 
 submitLoginBtn.addEventListener("click", async () => {
-  showLoader();
   const username = loginUsername.value.trim();
   const password = loginPassword.value.trim();
 
@@ -312,6 +319,9 @@ submitLoginBtn.addEventListener("click", async () => {
     return;
   }
 
+  loginModal.close();
+  showLoader();
+
   const user = {
     id: data.userId,
     username: data.username,
@@ -329,12 +339,11 @@ submitLoginBtn.addEventListener("click", async () => {
     console.error("Error loading groups:", err);
   }
 
-  loginModal.close();
   homeView.style.display = "none";
   groupView.style.display = "flex";
-  hideLoader();
   showLoggedInUI();
   renderMember(currentUser.displayName);
+  hideLoader();
 });
 
 logoutBtn.addEventListener("click", () => {
@@ -462,11 +471,3 @@ document.querySelectorAll(".drawer-item[data-lang]").forEach((btn) => {
     drawerBackdrop.style.display = "none";
   });
 });
-
-function showLoader() {
-  loaderScreen.style.display = "flex";
-}
-
-function hideLoader() {
-  loaderScreen.style.display = "none";
-}
