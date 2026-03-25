@@ -259,7 +259,7 @@ freeNowBtn.addEventListener("click", async () => {
 
   const data = await updateStatus(currentGroup.id, currentUser.id, "FREE");
 
-  const freeUntil = Date.now() + 10 * 60 * 1000;
+  const freeUntil = Date.now() + 10 * 1000;
   localStorage.setItem("freeUntil", freeUntil);
 
   setFreeButton(freeUntil);
