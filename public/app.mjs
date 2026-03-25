@@ -232,21 +232,23 @@ document
   });
 
 freeNowBtn.addEventListener("click", async () => {
-  const newStatus = currentUser.status === "FREE" ? "BUSY" : "FREE";
-  const data = await updateStatus(currentGroup.id, currentUser.id, newStatus);
+  if (freeNowBtn.disabled) return;
+
+  const data = await updateStatus(currentGroup.id, currentUser.id, "FREE");
   setStatus(data.status);
 
-  const memberEls = document.querySelectorAll(".member");
-  memberEls.forEach((el) => {
-    const nameEl = el.querySelector(".member-name");
-    if (nameEl && nameEl.textContent === currentUser.displayName) {
-      const dot = el.querySelector(".status-dot");
-      dot.className = `status-dot ${data.status === "FREE" ? "green" : "red"}`;
-      if (data.status === "FREE") {
-        dot.classList.add("jump");
-      }
-    }
-  });
+  freeNowBtn.disabled = true;
+  freeNowBtn.style.background = "#3ddc84";
+  freeNowBtn.style.color = "#0b1220";
+  freeNowBtn.textContent = "You're free!";
+
+  setTimeout(() => {
+    freeNowBtn.disabled = false;
+    freeNowBtn.style.background = "";
+    freeNowBtn.style.color = "";
+    freeNowBtn.textContent = t("freeNow");
+    setStatus("BUSY");
+  }, 10 * 60 * 1000);
 });
 
 loginBtn.addEventListener("click", () => loginModal.showModal());
