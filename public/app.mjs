@@ -235,7 +235,6 @@ freeNowBtn.addEventListener("click", async () => {
   if (freeNowBtn.disabled) return;
 
   const data = await updateStatus(currentGroup.id, currentUser.id, "FREE");
-  setStatus(data.status);
 
   freeNowBtn.disabled = true;
   freeNowBtn.style.background = "#3ddc84";
@@ -247,7 +246,6 @@ freeNowBtn.addEventListener("click", async () => {
     freeNowBtn.style.background = "";
     freeNowBtn.style.color = "";
     freeNowBtn.textContent = t("freeNow");
-    setStatus("BUSY");
   }, 10 * 60 * 1000);
 });
 
