@@ -6,7 +6,7 @@ import {
   deleteGroup,
   subscribeUser,
 } from "/api/groupApi.mjs";
-import { currentUser, setStatus, setCurrentUser } from "/state/appState.mjs";
+import { currentUser, setCurrentUser } from "/state/appState.mjs";
 
 import {
   openCreateGroupModal,
@@ -119,7 +119,7 @@ if (savedUser) {
   homeView.style.display = "none";
   groupView.style.display = "flex";
   showLoggedInUI();
-  renderMember(user.displayName, user.status);
+  renderMember(user.displayName);
 
   try {
     const groups = await getGroups(user.id);
@@ -337,7 +337,7 @@ submitLoginBtn.addEventListener("click", async () => {
   groupView.style.display = "flex";
 
   showLoggedInUI();
-  renderMember(currentUser.displayName, currentUser.status);
+  renderMember(currentUser.displayName);
 });
 
 logoutBtn.addEventListener("click", () => {

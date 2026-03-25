@@ -13,11 +13,8 @@ import {
 } from "../utils/dom.mjs";
 
 import { getMembers } from "../api/groupApi.mjs";
-
 import { renderMember } from "./members.mjs";
-
-import { currentUser, setStatus } from "../state/appState.mjs";
-
+import { currentUser } from "../state/appState.mjs";
 import { setCurrentGroup } from "../app.mjs";
 
 export async function goToGroupView(group) {
@@ -29,14 +26,13 @@ export async function goToGroupView(group) {
   activeGroupTitle.textContent = group.name;
 
   setCurrentGroup(group);
-  setStatus("BUSY");
 
   memberList.innerHTML = "";
 
   try {
     const members = await getMembers(group.id);
     members.forEach((member) => {
-      renderMember(member.username, "BUSY");
+      renderMember(member.username);
     });
   } catch (err) {
     console.error("Could not load members:", err);
