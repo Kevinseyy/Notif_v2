@@ -89,3 +89,5 @@ export const registerUsername = $("registerUsername");
 export const registerPassword = $("registerPassword");
 export const loginUsername = $("loginUsername");
 export const loginPassword = $("loginPassword");
+
+export const loaderScreen = $("loaderScreen");

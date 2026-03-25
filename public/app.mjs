@@ -73,6 +73,7 @@ import {
   loginUsername,
   loginPassword,
   offlineScreen,
+  loaderScreen,
 } from "/utils/dom.mjs";
 
 async function registerPushSubscription(userId) {
@@ -120,6 +121,7 @@ if (savedFreeUntil) {
 
 const savedUser = localStorage.getItem("currentUser");
 if (savedUser) {
+  showLoader();
   const user = JSON.parse(savedUser);
   setCurrentUser(user);
   await registerPushSubscription(user.id);
@@ -135,11 +137,13 @@ if (savedUser) {
   } catch (err) {
     console.error("Error loading groups:", err);
   }
+  hideLoader();
 }
 
 createGroupBtn.addEventListener("click", openCreateGroupModal);
 
 submitCreateGroupBtn.addEventListener("click", async () => {
+  showLoader();
   const name = groupNameInput.value.trim();
 
   if (name.length < 2) {
@@ -156,6 +160,7 @@ submitCreateGroupBtn.addEventListener("click", async () => {
   } catch (err) {
     setError(err.message);
   }
+  hideLoader();
 });
 
 export function setCurrentGroup(group) {
@@ -165,6 +170,7 @@ export function setCurrentGroup(group) {
 joinBtn.addEventListener("click", () => joinGroupModal.showModal());
 
 submitJoinBtn.addEventListener("click", async () => {
+  showLoader();
   const code = joinCodeInput.value.trim();
   joinGroupError.textContent = "";
 
@@ -184,6 +190,7 @@ submitJoinBtn.addEventListener("click", async () => {
     joinGroupError.textContent =
       err.message === "Invalid code" ? t("invalidCode") : t("loginFailed");
   }
+  hideLoader();
 });
 
 codeBtn.addEventListener("click", () => {
@@ -278,6 +285,7 @@ submitRegisterBtn.addEventListener("click", async () => {
 });
 
 submitLoginBtn.addEventListener("click", async () => {
+  showLoader();
   const username = loginUsername.value.trim();
   const password = loginPassword.value.trim();
 
@@ -322,6 +330,7 @@ submitLoginBtn.addEventListener("click", async () => {
   groupView.style.display = "flex";
   showLoggedInUI();
   renderMember(currentUser.displayName);
+  hideLoader();
 });
 
 logoutBtn.addEventListener("click", () => {
@@ -449,3 +458,11 @@ document.querySelectorAll(".drawer-item[data-lang]").forEach((btn) => {
     drawerBackdrop.style.display = "none";
   });
 });
+
+function showLoader() {
+  loaderScreen.style.display = "flex";
+}
+
+function hideLoader() {
+  loaderScreen.style.display = "none";
+}
