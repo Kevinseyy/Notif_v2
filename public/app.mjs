@@ -110,6 +110,11 @@ let previousView = null;
 
 applyTranslations();
 
+const savedFreeUntil = localStorage.getItem("freeUntil");
+if (savedFreeUntil) {
+  setFreeButton(Number(savedFreeUntil));
+}
+
 const savedUser = localStorage.getItem("currentUser");
 if (savedUser) {
   const user = JSON.parse(savedUser);
@@ -231,10 +236,9 @@ document
     }
   });
 
-freeNowBtn.addEventListener("click", async () => {
-  if (freeNowBtn.disabled) return;
-
-  const data = await updateStatus(currentGroup.id, currentUser.id, "FREE");
+function setFreeButton(freeUntil) {
+  const remaining = freeUntil - Date.now();
+  if (remaining <= 0) return;
 
   freeNowBtn.disabled = true;
   freeNowBtn.style.background = "#3ddc84";
@@ -246,7 +250,19 @@ freeNowBtn.addEventListener("click", async () => {
     freeNowBtn.style.background = "";
     freeNowBtn.style.color = "";
     freeNowBtn.textContent = t("freeNow");
-  }, 10 * 60 * 1000);
+    localStorage.removeItem("freeUntil");
+  }, remaining);
+}
+
+freeNowBtn.addEventListener("click", async () => {
+  if (freeNowBtn.disabled) return;
+
+  const data = await updateStatus(currentGroup.id, currentUser.id, "FREE");
+
+  const freeUntil = Date.now() + 10 * 60 * 1000;
+  localStorage.setItem("freeUntil", freeUntil);
+
+  setFreeButton(freeUntil);
 });
 
 loginBtn.addEventListener("click", () => loginModal.showModal());
