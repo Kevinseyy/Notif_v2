@@ -8,16 +8,16 @@ Create an account and either create a group or join one using an invite code sha
 
 ## Features
 
-Account system with secure hashed passwords
-Create groups and invite friends via a generated code
-Push notifications when someone presses Free now
-Free now button with a 10 minute cooldown
-Installable as a PWA on phone and desktop
-Offline support via service worker caching
-Available in English, Norwegian and Japanese
-Language switcher accessible from the top bar
-Terms of Service and Privacy Policy
-Delete account and all personal data at any time
+1. Account system with secure hashed passwords.
+2. Create groups and invite friends via a generated code.
+3. Push notifications when someone presses Free now.
+4. Free now button with a 10 minute cooldown.
+5. Installable as a PWA on phone and desktop.
+6. Offline support via service worker caching.
+7. Available in English, Norwegian and Japanese.
+8. Language switcher accessible from the top bar.
+9. Terms of Service and Privacy Policy.
+10. Delete account and all personal data at any time.
 
 FEATURE MAP:
 
