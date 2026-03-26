@@ -126,11 +126,6 @@ let previousView = null;
 applyTranslations();
 initModals();
 
-const savedFreeUntil = localStorage.getItem("freeUntil");
-if (savedFreeUntil) {
-  setFreeButton(Number(savedFreeUntil));
-}
-
 const savedUser = localStorage.getItem("currentUser");
 if (savedUser) {
   showLoader();
@@ -234,7 +229,7 @@ deleteGroupBtn.addEventListener("click", async () => {
   }
 });
 
-function setFreeButton(freeUntil) {
+function setFreeButton(freeUntil, groupId) {
   const remaining = freeUntil - Date.now();
   if (remaining <= 0) return;
 
@@ -248,8 +243,20 @@ function setFreeButton(freeUntil) {
     freeNowBtn.style.background = "";
     freeNowBtn.style.color = "";
     freeNowBtn.textContent = t("freeNow");
-    localStorage.removeItem("freeUntil");
+    localStorage.removeItem(`freeUntil_${groupId}`);
   }, remaining);
+}
+
+export function checkFreeButton(groupId) {
+  const saved = localStorage.getItem(`freeUntil_${groupId}`);
+  if (saved) {
+    setFreeButton(Number(saved), groupId);
+  } else {
+    freeNowBtn.disabled = false;
+    freeNowBtn.style.background = "";
+    freeNowBtn.style.color = "";
+    freeNowBtn.textContent = t("freeNow");
+  }
 }
 
 freeNowBtn.addEventListener("click", async () => {
@@ -258,7 +265,7 @@ freeNowBtn.addEventListener("click", async () => {
   const data = await updateStatus(currentGroup.id, currentUser.id, "FREE");
 
   const freeUntil = Date.now() + 10 * 60 * 1000;
-  localStorage.setItem("freeUntil", freeUntil);
+  localStorage.setItem(`freeUntil_${currentGroup.id}`, freeUntil);
 
   setFreeButton(freeUntil);
 });

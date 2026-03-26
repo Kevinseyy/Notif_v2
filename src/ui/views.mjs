@@ -15,7 +15,7 @@ import {
 import { getMembers } from "../api/groupApi.mjs";
 import { renderMember } from "./members.mjs";
 import { currentUser } from "../state/appState.mjs";
-import { setCurrentGroup } from "../app.mjs";
+import { setCurrentGroup, checkFreeButton } from "../app.mjs";
 
 export async function goToGroupView(group) {
   homeView.style.display = "none";
@@ -37,6 +37,8 @@ export async function goToGroupView(group) {
   } catch (err) {
     console.error("Could not load members:", err);
   }
+
+  checkFreeButton(group.id);
 }
 
 export function addGroupTab(group) {
