@@ -6,6 +6,7 @@ import {
   deleteGroup,
   subscribeUser,
 } from "/api/groupApi.mjs";
+import { api } from "/api/api.mjs";
 import { currentUser, setCurrentUser } from "/state/appState.mjs";
 
 import {
@@ -174,6 +175,18 @@ export function setCurrentGroup(group) {
   currentGroup = group;
 }
 
+export function checkFreeButton(groupId) {
+  const saved = localStorage.getItem(`freeUntil_${groupId}`);
+  if (saved) {
+    setFreeButton(Number(saved), groupId);
+  } else {
+    freeNowBtn.disabled = false;
+    freeNowBtn.style.background = "";
+    freeNowBtn.style.color = "";
+    freeNowBtn.textContent = t("freeNow");
+  }
+}
+
 joinBtn.addEventListener("click", () => joinGroupModal.showModal());
 
 submitJoinBtn.addEventListener("click", async () => {
@@ -247,27 +260,15 @@ function setFreeButton(freeUntil, groupId) {
   }, remaining);
 }
 
-export function checkFreeButton(groupId) {
-  const saved = localStorage.getItem(`freeUntil_${groupId}`);
-  if (saved) {
-    setFreeButton(Number(saved), groupId);
-  } else {
-    freeNowBtn.disabled = false;
-    freeNowBtn.style.background = "";
-    freeNowBtn.style.color = "";
-    freeNowBtn.textContent = t("freeNow");
-  }
-}
-
 freeNowBtn.addEventListener("click", async () => {
   if (freeNowBtn.disabled) return;
 
-  const data = await updateStatus(currentGroup.id, currentUser.id, "FREE");
+  await updateStatus(currentGroup.id, currentUser.id, "FREE");
 
   const freeUntil = Date.now() + 10 * 60 * 1000;
   localStorage.setItem(`freeUntil_${currentGroup.id}`, freeUntil);
 
-  setFreeButton(freeUntil);
+  setFreeButton(freeUntil, currentGroup.id);
 });
 
 loginBtn.addEventListener("click", () => loginModal.showModal());
@@ -283,74 +284,65 @@ submitRegisterBtn.addEventListener("click", async () => {
     return;
   }
 
-  const res = await fetch("/api/v1/", {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ username, password, tosAgreed: true }),
-  });
-
-  const data = await res.json();
-
-  if (!res.ok) {
+  try {
+    await api("/api/v1/", {
+      method: "POST",
+      body: { username, password, tosAgreed: true },
+    });
+    registerModal.close();
+  } catch (err) {
     alert(
-      data.error === "Username already taken"
+      err.message === "Username already taken"
         ? t("usernameTaken")
         : t("registrationFailed")
     );
-    return;
   }
-
-  registerModal.close();
 });
 
 submitLoginBtn.addEventListener("click", async () => {
   const username = loginUsername.value.trim();
   const password = loginPassword.value.trim();
 
-  const res = await fetch("/api/v1/login", {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ username, password }),
-  });
+  try {
+    const data = await api("/api/v1/login", {
+      method: "POST",
+      body: { username, password },
+    });
 
-  const data = await res.json();
+    loginModal.close();
+    showLoader();
 
-  if (!res.ok) {
+    const user = {
+      id: data.userId,
+      username: data.username,
+      displayName: data.username,
+    };
+    setCurrentUser(user);
+    localStorage.setItem("currentUser", JSON.stringify(user));
+
+    await registerPushSubscription(user.id);
+
+    try {
+      const groups = await getGroups(user.id);
+      groups.forEach((group) => addGroupTab(group));
+    } catch (err) {
+      console.error("Error loading groups:", err);
+    }
+
+    homeView.style.display = "none";
+    groupView.style.display = "flex";
+    showLoggedInUI();
+    renderMember(currentUser.displayName);
+    hideLoader();
+  } catch (err) {
     alert(
-      data.error === "User not found"
+      err.message === "User not found"
         ? t("userNotFound")
-        : data.error === "Incorrect password"
+        : err.message === "Incorrect password"
         ? t("incorrectPassword")
         : t("loginFailed")
     );
-    return;
   }
-
-  loginModal.close();
-  showLoader();
-
-  const user = {
-    id: data.userId,
-    username: data.username,
-    displayName: data.username,
-  };
-  setCurrentUser(user);
-  localStorage.setItem("currentUser", JSON.stringify(user));
-
-  await registerPushSubscription(user.id);
-
-  try {
-    const groups = await getGroups(user.id);
-    groups.forEach((group) => addGroupTab(group));
-  } catch (err) {
-    console.error("Error loading groups:", err);
-  }
-
-  homeView.style.display = "none";
-  groupView.style.display = "flex";
-  showLoggedInUI();
-  renderMember(currentUser.displayName);
-  hideLoader();
 });
 
 logoutBtn.addEventListener("click", () => {
@@ -399,21 +391,10 @@ submitChangeUsernameBtn.addEventListener("click", async () => {
   changeUsernameError.textContent = "";
 
   try {
-    const res = await fetch("/api/v1/username", {
+    const data = await api("/api/v1/username", {
       method: "PUT",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ userId: currentUser.id, newUsername }),
+      body: { userId: currentUser.id, newUsername },
     });
-
-    const data = await res.json();
-
-    if (!res.ok) {
-      changeUsernameError.textContent =
-        data.error === "Username already taken"
-          ? t("usernameTaken")
-          : t("updateFailed");
-      return;
-    }
 
     const updatedUser = {
       ...currentUser,
@@ -428,7 +409,10 @@ submitChangeUsernameBtn.addEventListener("click", async () => {
     changeUsernameInput.value = "";
     alert(t("usernameUpdated"));
   } catch (err) {
-    changeUsernameError.textContent = t("errorOccurred");
+    changeUsernameError.textContent =
+      err.message === "Username already taken"
+        ? t("usernameTaken")
+        : t("updateFailed");
   }
 });
 
@@ -437,13 +421,7 @@ deleteAccountBtn.addEventListener("click", async () => {
   if (!confirmed) return;
 
   try {
-    const res = await fetch(`/api/v1/${currentUser.id}`, { method: "DELETE" });
-
-    if (!res.ok) {
-      const data = await res.json();
-      alert(data.error || t("deleteAccountFailed"));
-      return;
-    }
+    await api(`/api/v1/${currentUser.id}`, { method: "DELETE" });
 
     alert(t("accountDeleted"));
     setCurrentUser(null);
@@ -451,7 +429,7 @@ deleteAccountBtn.addEventListener("click", async () => {
     localStorage.removeItem("currentUser");
     showLoggedOutUI();
   } catch (err) {
-    alert(t("errorOccurred"));
+    alert(err.message || t("deleteAccountFailed"));
   }
 });
 
