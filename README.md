@@ -1,21 +1,23 @@
 # Notif_v2
 
-The application that I want to make may seem simple, but valuable. The main reason I want to create this app is to make it easier for friends to keep in contact. I've noticed now that I'm getting older, my friend group doesn't talk to each other everyday anymore like we used to because of jobs and some being students. Because of this, reaching out may seem inconvenient and maybe some may see it as disturbing the other. So to counter this effect, I would like to make an application that makes it easy for friends to connect without needing to feel like you can't.
+NOTIF is a web application designed to make it easier for friends to stay connected. The main reason I wanted to create this app is because as we get older, my friend group doesn't talk to each other every day anymore like we used to, because of jobs and some of us being students. Reaching out can feel inconvenient, and some may even see it as disturbing the other. NOTIF counters this by giving friends a simple, low pressure way to signal availability without needing to send a message.
 
-How the application works:
+## How it works
 
-You will have to make an account. After everyone has an account you can make a group and set the name of the group. The core feature is the “Im free” (temporary button name) button, and the notification system. When you press “im free”, everyone in that group will get notified that you are free and would like to do something. To make it more flexible, you can get a time pop up, similar to what you would do when you set an alarm. So the notification would still immediately notify the others, but with time you are free.  
-When getting a notification, you get 3 options: “Free in 15 minutes”, “Free in 30 minutes”, “Free tonight”.
+Create an account and either create a group or join one using an invite code shared by a friend. Once inside a group you can see all the members. When you're free and want to hang out, press the Free now button. Everyone in the group instantly gets a push notification. The button locks for 10 minutes after pressing to prevent accidental spam, and automatically resets after the time is up.
 
-Example flow:
+## Features
 
-Friend goes Free now
-
-Notification appears
-
-You tap “Free in 30 min”
-
-Status auto-expires
+Account system with secure hashed passwords
+Create groups and invite friends via a generated code
+Push notifications when someone presses Free now
+Free now button with a 10 minute cooldown
+Installable as a PWA on phone and desktop
+Offline support via service worker caching
+Available in English, Norwegian and Japanese
+Language switcher accessible from the top bar
+Terms of Service and Privacy Policy
+Delete account and all personal data at any time
 
 FEATURE MAP:
 
