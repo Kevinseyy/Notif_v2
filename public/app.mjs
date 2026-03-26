@@ -1,3 +1,5 @@
+import "/ui/userComponent.mjs";
+
 import {
   createGroup,
   getGroups,
