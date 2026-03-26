@@ -1,4 +1,5 @@
 import express from "express";
+import bcrypt from "bcrypt";
 import { validateBody } from "../middleware/validateBody.mjs";
 import pool from "../database/database.mjs";
 
@@ -21,9 +22,11 @@ usersRouter.post(
     }
 
     try {
+      const hashedPassword = await bcrypt.hash(password, 10);
+
       const result = await pool.query(
         "INSERT INTO users (username, password, tos_agreed) VALUES ($1, $2, $3) RETURNING id, username, created_at",
-        [username, password, tosAgreed]
+        [username, hashedPassword, tosAgreed]
       );
 
       res.status(201).json({
@@ -53,7 +56,8 @@ usersRouter.post("/login", async (req, res) => {
 
     const user = result.rows[0];
 
-    if (user.password !== password) {
+    const match = await bcrypt.compare(password, user.password);
+    if (!match) {
       return res.status(401).json({ error: "Incorrect password" });
     }
 
